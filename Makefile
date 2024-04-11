@@ -9,7 +9,8 @@ RM = rm -rf
 SRC_DIR = sources/
 
 SOURCES = $(addprefix $(SRC_DIR), main.cpp \
-									validateInput.c)
+									validateInput.c \
+									Client.cpp)
 
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
