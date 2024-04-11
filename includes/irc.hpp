@@ -6,6 +6,6 @@
 # include <stdexcept>
 # include <stdbool.h>
 
-void    validateInput(std::string argument);
+void    validateInput(std::string port, std::string password);
 
 #endif
