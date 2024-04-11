@@ -1,4 +1,4 @@
-#include "../includes/irc.h"
+#include "../includes/irc.hpp"
 
 int main(int argc, char **argv)
 {
@@ -6,7 +6,7 @@ int main(int argc, char **argv)
     {
         if (argc != 3)
             throw(std::runtime_error("Incorrect number of arguments!"));
-        (void)argv;
+        validateInput(argv[1]);
     }
     catch (const std::exception &e)
     {

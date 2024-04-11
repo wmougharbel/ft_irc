@@ -8,7 +8,8 @@ RM = rm -rf
 
 SRC_DIR = sources/
 
-SOURCES = $(addprefix $(SRC_DIR), main.cpp)
+SOURCES = $(addprefix $(SRC_DIR), main.cpp \
+									validateInput.c)
 
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
