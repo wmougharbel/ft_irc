@@ -7,9 +7,10 @@ int main(int argc, char **argv)
         if (argc != 3)
             throw(std::runtime_error("Incorrect number of arguments!\nUsage: ./ircserv <port> <password>\ne.g Port = 6667\te.g Password = P@$$w0rd"));
         validateInput(argv[1], argv[2]);
-        Client  c1(true, "cheesus", "walid");
-        std::cout << "Nickname: " << c1.getNickname() << std::endl;
-        std::cout << "Username: " << c1.getUsername() << std::endl;
+        Client  c1("cheesus", "walid");
+        c1.promote();
+        const Client c2("slow brain", "lorris");
+        c1.kick(c2);
     }
     catch (const std::exception &e)
     {
