@@ -4,6 +4,8 @@ Client::Client(){}
 
 Client::Client(std::string nickname, std::string username)
 {
+	if (nickname.empty() || username.empty())
+		throw (std::runtime_error("Nickname and username cannot be empty!"));
 	_isOperator = false;
 	_isAuthenticated = false;
 	_nickname = nickname;
@@ -89,6 +91,6 @@ void	Client::authenticate()
 void	Client::kick(const Client &toKick)
 {
 	if (this->getOperator() == false)
-		throw (std::runtime_error("Only operators can kick clients out of channels!"));
+		throw (std::runtime_error("Only operators can kick clients out of a channel!"));
 	std::cout << this->getUsername() << " kicked " << toKick.getUsername() << " out of the channel" << std::endl;
 }

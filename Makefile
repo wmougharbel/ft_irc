@@ -10,7 +10,8 @@ SRC_DIR = sources/
 
 SOURCES = $(addprefix $(SRC_DIR), main.cpp \
 									validateInput.c \
-									Client.cpp)
+									Client.cpp \
+									MockServer.cpp)
 
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 
