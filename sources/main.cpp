@@ -8,9 +8,15 @@ int main(int argc, char **argv)
             throw(std::runtime_error("Incorrect number of arguments!\nUsage: ./ircserv <port> <password>\ne.g Port = 6667\te.g Password = P@$$w0rd"));
         validateInput(argv[1], argv[2]);
         Client  c1("cheesus", "walid");
-        c1.promote();
-        const Client c2("slow brain", "lorris");
-        c1.kick(c2);
+        // MockServer ms;
+        // ms.setPassword(argv[2]);
+        c1.setServerPassword(argv[2]);
+        std::string clientPassword;
+        std::cout << "Enter client password: ";
+        getline(std::cin, clientPassword);
+        c1.setClientPassword(clientPassword);
+        std::cout << "Client password: " << c1.getClientPassword() << std::endl;
+        c1.authenticate();
     }
     catch (const std::exception &e)
     {

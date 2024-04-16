@@ -1,11 +1,15 @@
 #include "../includes/irc.hpp"
 
-MockServer::MockServer()
+MockServer::MockServer(){}
+
+MockServer::~MockServer(){}
+
+std::string MockServer::getPassword() const
 {
-    std::cout << "Server constructor created" << std::endl;
+    return (_password);
 }
 
-MockServer::~MockServer()
+void    MockServer::setPassword(std::string password)
 {
-    std::cout << "Servers was destroyed" << std::endl;
+    _password = password;
 }

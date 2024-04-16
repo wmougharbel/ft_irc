@@ -34,12 +34,12 @@ Client  &Client::operator=(const Client &object)
 
 Client::~Client(){}
 
-bool    Client::getOperator()
+bool    Client::getOperator() const
 {
 	return (_isOperator);
 }
 
-bool	Client::getAuthStatus()
+bool	Client::getAuthStatus() const
 {
 	return (_isAuthenticated);
 }
@@ -52,6 +52,11 @@ std::string Client::getNickname() const
 std::string Client::getUsername() const
 {
 	return (_username);
+}
+
+std::string Client::getClientPassword() const
+{
+	return (_clientPassword);
 }
 
 void    Client::setOperator(bool isOperator)
@@ -74,6 +79,11 @@ void    Client::setUsername(std::string username)
 	_username = username;
 }
 
+void	Client::setClientPassword(std::string clientPassword)
+{
+	_clientPassword = clientPassword;
+}
+
 void	Client::promote()
 {
 	setOperator(true);
@@ -82,10 +92,13 @@ void	Client::promote()
 
 void	Client::authenticate()
 {
-	//check if the client's entered password matches server's password
-	//if yes change the auth satus to true
-	//else throw an exception
+	// check if the client's entered password matches server's password
+	// if yes change the auth satus to true
+	// else throw an exception
+	if (_clientPassword != _server.getPassword())
+		throw (std::runtime_error("Incorrect Password!"));
 	setAuthStatus(true);
+	std::cout << "User authentication successful" << std::endl;
 }
 
 void	Client::kick(const Client &toKick)
@@ -93,4 +106,10 @@ void	Client::kick(const Client &toKick)
 	if (this->getOperator() == false)
 		throw (std::runtime_error("Only operators can kick clients out of a channel!"));
 	std::cout << this->getUsername() << " kicked " << toKick.getUsername() << " out of the channel" << std::endl;
+}
+
+void	Client::setServerPassword(std::string password)
+{
+	_server.setPassword(password);
+	std::cout << "Server password: " << _server.getPassword() << std::endl;
 }

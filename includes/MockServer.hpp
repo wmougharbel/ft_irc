@@ -11,6 +11,12 @@ class MockServer
     public:
         MockServer();
         ~MockServer();
+        
+        //getters
+        std::string getPassword() const;
+
+        //setters
+        void setPassword(std::string password);
 };
 
 #endif
