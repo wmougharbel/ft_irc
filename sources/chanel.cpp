@@ -1,12 +1,15 @@
 #include "Chanel.hpp"
 
-Chanel::Chanel(const std::string& name, const std::string& firstMember) : name(name), isinviteOnly(false), istopicRestricted(false), ispassword(false), islimit(false) {
+Chanel::Chanel(const std::string& name, const std::string& firstMember) : name(name), isinviteOnly(false), istopicRestricted(false), ispassword(false), limit(0) {
 	members.push_back(firstMember);
 	operators.push_back(firstMember);
 }
 
 Chanel::~Chanel() {}
 
+void Chanel::setlimit(const int limit){
+	this->limit == limit;
+}
 
 
 void Chanel::setTopic(const std::string& topic) {

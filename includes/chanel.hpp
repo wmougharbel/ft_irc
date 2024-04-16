@@ -13,7 +13,6 @@ private:
 	bool isinviteOnly; 
 	bool istopicRestricted;
 	bool ispassword;
-	bool islimit;
 	int limit;
 	std::string ChanelKey; 
 	std::vector <std::string> operators;
@@ -22,6 +21,7 @@ public:
 	Chanel(const std::string& name,const std::string& firstMember);
 	~Chanel(); 
 
+	void setlimit(const int limit);
 
 	void setTopic(const std::string& topic);
 	std::string getTopic() const;
