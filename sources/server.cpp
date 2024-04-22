@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <err.h>
-#include "channel.hpp"
-#include "client.hpp"
+// #include "channel.hpp"
+// #include "client.hpp"
 
 #define SERVER_IP "127.0.0.1"
 
@@ -26,7 +26,8 @@ class Server
         std::string _password;
         int _socket;
         std::vector<pollfd> _pfd;
-        std::vector<Channel *> _channList;
+        std::vector<std::string> _messages;
+        // std::vector<Channel *> _channList;
         void _initializeSocket(void);
         void _makeSocketNonBlocking(int sock);
         void _bindListenOnSocket(int sock, struct sockaddr_in addr);
@@ -39,7 +40,9 @@ class Server
         std::string getPassword(void) const;
         void newClientConnects(int sock, std::vector<pollfd> *pfds, int i);
         void existingClientMessage(std::vector<pollfd> &pfds, int i);
-        Channel* makeChannel(const std::string &name);
+        bool didClientAuthenticate(std::string &pass);
+        
+        //Channel* makeChannel(const std::string &name);
         // void onClientDisconnect(int fd);
         // std::string readMessage(int fd);
         // void createChannel(const std::string& name, const std::string& key);
@@ -133,28 +136,31 @@ void Server::startServer(void)
             if((_pfd[i].revents & POLLIN) == POLLIN)
             {
                 if (i == 0)
+                {
                     newClientConnects(_socket, &_pfd, i);
+                    break;
+                }
                 else
                     existingClientMessage(_pfd, i);
             }
         }
     }
-    if (isRunning == false)
-    {
-        if (_socket != -1)
-        {
-            close(_socket);
-            _socket = -1; // Reset socket to invalid value
-        }
-        for (size_t i = 1; i < _pfd.size(); i++) // Close any open client sockets
-        {
-            if (_pfd[i].fd != -1)
-            {
-                close(_pfd[i].fd);
-                _pfd[i].fd = -1; // Reset client socket to invalid value
-            }
-        }
-    }
+    // if (isRunning == false)
+    // {
+    //     if (_socket != -1)
+    //     {
+    //         close(_socket);
+    //         _socket = -1; // Reset socket to invalid value
+    //     }
+    //     for (size_t i = 1; i < _pfd.size(); i++) // Close any open client sockets
+    //     {
+    //         if (_pfd[i].fd != -1)
+    //         {
+    //             close(_pfd[i].fd);
+    //             _pfd[i].fd = -1; // Reset client socket to invalid value
+    //         }
+    //     }
+    // }
 }
 
 std::string Server::getPassword(void) const
@@ -185,6 +191,8 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
 {
     std::string buf;
     char tempBuf[1024];
+    std::string clientPass;
+
     while (true)
     {
         int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
@@ -198,23 +206,43 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
             pfds.erase(pfds.begin() + i);
             break;
         }
-        // Find the position of the newline or carriage return
-        char *end = std::find(tempBuf, tempBuf + readBytes, '\n'); // looking for the '\n' character to stop reading
-        if (end == tempBuf + readBytes) // this check is in case '\n' was not found in the above find operation
-            end = std::find(tempBuf, tempBuf + readBytes, '\r'); // looking for the '\r' character to stop reading
-        buf.append(tempBuf, end - tempBuf); // Append the read data to buf
-        std::cout << "Msg received from client no [" << pfds[i].fd << "]: " << buf << std::endl;
-        if (end != tempBuf + readBytes) // Stop reading if either '\n' or '\r' found
+        char *end = strstr(tempBuf, "\r\n");
+        buf.append(tempBuf, end - tempBuf);
+        _messages.push_back(buf);
+        std::cout << buf << std::endl;
+        clientPass = _messages[0].substr(5, std::string::npos);
+        if (didClientAuthenticate(clientPass))
+        {
+            std::cout << "Client authenticated" << std::endl;
+            clientPass.clear();
             break;
+        }
+        else
+        {
+            std::cout << "Client not authenticated, disconnecting..." << std::endl;
+            if (close(pfds[i].fd) == -1)
+                    throw std::runtime_error("Error: closing client socket!");
+            std::cout << "Client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+            pfds.erase(pfds.begin() + i);
+            break;
+        }
     }
 }
 
-Channel* Server::makeChannel(const std::string &name)
-{
-    Channel* ch = new Channel(name);
-    _channList.push_back(ch);
+// Channel* Server::makeChannel(const std::string &name)
+// {
+//     Channel* ch = new Channel(name);
+//     _channList.push_back(ch);
 
-    return ch;
+//     return ch;
+// }
+
+bool Server::didClientAuthenticate(std::string &pass)
+{
+    if (pass == getPassword())
+        return true;
+    else
+        return false;
 }
 
 void SignalHandler(int signum)
