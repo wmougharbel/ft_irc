@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:44:38 by walid            ###   ########.fr       */
+/*   Updated: 2024/04/22 19:50:26 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 class Channel {
 private:
 	std::string name; 
-	std::vector<std::string> members; 
+	std::vector<std::string> members;
 	std::string topic; 
 	bool isinviteOnly; 
 	bool istopicRestricted;
@@ -55,4 +55,4 @@ public:
 
 };
 
-#endif 
+#endif

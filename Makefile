@@ -2,16 +2,16 @@ NAME = ircserv
 
 CPP = c++
 
-CPPFLAGS = -Wall -Wextra -Werror -g -std=c++98 -pedantic
+CPPFLAGS = #-Wall -Wextra -Werror -g -std=c++98 -pedantic
 
 RM = rm -rf
 
 SRC_DIR = sources/
 
-SOURCES = $(addprefix $(SRC_DIR),   validateInput.c \
+SOURCES = $(addprefix $(SRC_DIR),   validateInput.cpp \
 									Client.cpp \
 									Server.cpp \
-									Channel.hpp)
+									Channel.cpp)
 
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 

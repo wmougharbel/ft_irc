@@ -25,7 +25,7 @@ class Client
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_clientPassword;
-		Channel		_channel
+		//Channel		_channel;
 		Client();
 
 	public:

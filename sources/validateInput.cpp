@@ -43,5 +43,3 @@ void    validateInput(std::string port, std::string password)
     if (!getPasswordLength(password))
         throw (std::runtime_error("Password argument should be between 4 and 8 characters long!"));
 }
-
-/// default port is 6667

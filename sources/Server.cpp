@@ -3,15 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:59:34 by walid            ###   ########.fr       */
+/*   Updated: 2024/04/22 19:43:40 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// #include "channel.hpp"
-// #include "client.hpp"
 
 #include "../includes/Server.hpp"
 
@@ -96,10 +93,7 @@ void Server::startServer(void)
 {
     while(isRunning == true)
     {
-        int result = poll(&_pfd[0], _pfd.size(), -1);
-        if (result == 0)
-            continue; // timeout occurred.
-        else if (result == -1)
+        if (poll(&_pfd[0], _pfd.size(), -1) < 0)
             throw std::runtime_error("Error : Failed to poll on the server socket!");
         // check for events on each socket in the _pfd
         for (size_t i = 0; i < _pfd.size(); i++)
@@ -108,7 +102,7 @@ void Server::startServer(void)
             {
                 if (i == 0)
                 {
-                    newClientConnects(_socket, &_pfd, i);
+                    newClientConnects(_socket, _pfd);
                     break;
                 }
                 else
@@ -139,7 +133,7 @@ std::string Server::getPassword(void) const
     return _password;
 }
 
-void Server::newClientConnects(int sock, std::vector<pollfd> *pfds, int i)
+void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)//newClientConnects(int sock, std::vector<pollfd> &pfds, int i)
 {
     int         newClient;
     sockaddr_in addr = {};
@@ -154,7 +148,7 @@ void Server::newClientConnects(int sock, std::vector<pollfd> *pfds, int i)
         clientFd.fd = newClient;
         clientFd.events = POLLIN;
         clientFd.revents = 0;
-        pfds[i].push_back(clientFd);
+        pfds.push_back(clientFd);
     }
 }
 
@@ -177,7 +171,7 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
             pfds.erase(pfds.begin() + i);
             break;
         }
-        char *end = strstr(tempBuf, "\n");
+        char *end = strstr(tempBuf, "\r\n");
         buf.append(tempBuf, end - tempBuf);
         _messages.push_back(buf);
         std::cout << buf << std::endl;
