@@ -20,6 +20,7 @@
 class Client
 {
 	private:
+		int			_fd;
 		bool		_isOperator;
 		bool		_isAuthenticated;
 		std::string	_nickname;
@@ -29,9 +30,10 @@ class Client
 		Client();
 
 	public:
-		Client (std::string nickname, std::string username);
-		Client (const Client &);
-		Client	&operator=(const Client &);
+		Client(int fd);
+		// Client (std::string nickname, std::string username);
+		// Client (const Client &);
+		// Client	&operator=(const Client &);
 		~Client();
 
 		//vaiables
@@ -42,6 +44,7 @@ class Client
 		std::string	getNickname() const;
 		std::string	getUsername()const;
 		std::string	getClientPassword() const;
+		int getFd() const;
 
 		//setters
 		void	setOperator(bool isOperator);

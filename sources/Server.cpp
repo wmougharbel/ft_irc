@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:43:40 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/22 22:23:01 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,20 +135,25 @@ std::string Server::getPassword(void) const
 
 void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)//newClientConnects(int sock, std::vector<pollfd> &pfds, int i)
 {
-    int         newClient;
+    int         newClientFd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
 
-    newClient = accept(sock, (sockaddr *)&addr, &size);
-    if (newClient == -1)
+    newClientFd = accept(sock, (sockaddr *)&addr, &size);
+    if (newClientFd == -1)
         throw std::runtime_error("Error : Failed to accept client on the server socket!");
     else
     {
-        pollfd clientFd;
-        clientFd.fd = newClient;
-        clientFd.events = POLLIN;
-        clientFd.revents = 0;
-        pfds.push_back(clientFd);
+        pollfd eachNewClient;
+        eachNewClient.fd = newClientFd;
+        eachNewClient.events = POLLIN;
+        eachNewClient.revents = 0;
+        pfds.push_back(eachNewClient);
+
+        Client newClient = Client(newClientFd);
+        _clients.push_back(newClient);
+
+        std::cout << "new client is at : " << newClient.getFd() << std::endl;
     }
 }
 
@@ -168,6 +173,14 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
             if (close(pfds[i].fd) == -1)
                 throw std::runtime_error("Error : closing client socket!");
             std::cout << "client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+            for(size_t j = 0; j < _clients.size(); j++)
+            {
+                if(_clients[j].getFd() == pfds[i].fd)
+                {
+                    _clients.erase(_clients.begin() + j);
+                    break;
+                }
+            }
             pfds.erase(pfds.begin() + i);
             break;
         }

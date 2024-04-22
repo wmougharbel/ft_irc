@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:31:39 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/22 22:21:16 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@
 # include <stdlib.h>
 # include <algorithm>
 # include <err.h>
-# include "Server.hpp"
+# include "../includes/Client.hpp"
+
+class Client;
 
 class Server
 {
@@ -37,6 +39,7 @@ class Server
         int _socket;
         std::vector<pollfd> _pfd;
         std::vector<std::string> _messages;
+        std::vector<Client> _clients;
         // std::vector<Channel *> _channList;
         void _initializeSocket(void);
         void _makeSocketNonBlocking(int sock);
