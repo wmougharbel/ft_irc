@@ -6,11 +6,11 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:45:05 by walid            ###   ########.fr       */
+/*   Updated: 2024/04/22 18:48:03 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Channel.hpp"
+#include "../includes/Channel.hpp"
 
 Channel::Channel(const std::string& name, const std::string& firstMember) : name(name), isinviteOnly(false), istopicRestricted(false), ispassword(false), limit(0) {
 	members.push_back(firstMember);
@@ -20,7 +20,7 @@ Channel::Channel(const std::string& name, const std::string& firstMember) : name
 Channel::~Channel() {}
 
 void Channel::setlimit(const int limit){
-	this->limit == limit;
+	this->limit = limit;
 }
 
 

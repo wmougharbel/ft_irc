@@ -14,7 +14,6 @@
 # define CLIENT_HPP
 
 # include "Irc.hpp"
-# include "MockServer.hpp"
 
 // class MockServer;
 
@@ -26,7 +25,7 @@ class Client
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_clientPassword;
-		MockServer	_server;
+		Channel		_channel
 		Client();
 
 	public:

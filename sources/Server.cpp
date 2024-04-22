@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:45:33 by walid            ###   ########.fr       */
+/*   Updated: 2024/04/22 18:59:34 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,14 +177,14 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
             pfds.erase(pfds.begin() + i);
             break;
         }
-        char *end = strstr(tempBuf, "\r\n");
+        char *end = strstr(tempBuf, "\n");
         buf.append(tempBuf, end - tempBuf);
         _messages.push_back(buf);
         std::cout << buf << std::endl;
         clientPass = _messages[0].substr(5, std::string::npos);
         if (didClientAuthenticate(clientPass))
         {
-            std::cout << "Client authenticated" << std::endl;
+            std::cout << "Welcome Darling (british accent)" << std::endl;
             clientPass.clear();
             break;
         }

@@ -8,8 +8,7 @@ RM = rm -rf
 
 SRC_DIR = sources/
 
-SOURCES = $(addprefix $(SRC_DIR), main.cpp \
-									validateInput.c \
+SOURCES = $(addprefix $(SRC_DIR),   validateInput.c \
 									Client.cpp \
 									Server.cpp \
 									Channel.hpp)

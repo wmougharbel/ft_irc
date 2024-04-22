@@ -109,8 +109,8 @@ void	Client::authenticate()
 	// check if the client's entered password matches server's password
 	// if yes change the auth satus to true
 	// else throw an exception
-	if (_clientPassword != _server.getPassword())
-		throw (std::runtime_error("Incorrect Password!"));
+	// if (_clientPassword != _server.getPassword())
+	// 	throw (std::runtime_error("Incorrect Password!"));
 	setAuthStatus(true);
 	std::cout << "User authentication successful" << std::endl;
 }
@@ -124,6 +124,7 @@ void	Client::kick(const Client &toKick)
 
 void	Client::setServerPassword(std::string password)
 {
-	_server.setPassword(password);
-	std::cout << "Server password: " << _server.getPassword() << std::endl;
+	(void)password;
+	// _server.setPassword(password);
+	// std::cout << "Server password: " << _server.getPassword() << std::endl;
 }
