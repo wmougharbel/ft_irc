@@ -20,6 +20,7 @@ Client::Client(std::string nickname, std::string username)
 {
 	if (nickname.empty() || username.empty())
 		throw (std::runtime_error("Nickname and username cannot be empty!"));
+	_fd = -1;
 	_isOperator = false;
 	_isAuthenticated = false;
 	_nickname = nickname;
@@ -96,6 +97,16 @@ void    Client::setUsername(std::string username)
 void	Client::setClientPassword(std::string clientPassword)
 {
 	_clientPassword = clientPassword;
+}
+
+int	Client::getFd() const
+{
+	return (_fd);
+}
+
+void	Client::setFd(int fd)
+{
+	_fd = fd;
 }
 
 void	Client::promote()
