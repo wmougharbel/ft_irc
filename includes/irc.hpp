@@ -5,6 +5,8 @@
 # include <string>
 # include <stdexcept>
 # include <stdbool.h>
+# include "Client.hpp"
+# include "MockServer.hpp"
 
 void    validateInput(std::string port, std::string password);
 
