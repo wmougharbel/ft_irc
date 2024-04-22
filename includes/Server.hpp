@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:42:30 by walid            ###   ########.fr       */
+/*   Updated: 2024/04/22 19:31:39 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Server
         ~Server();
         void startServer(void);
         std::string getPassword(void) const;
-        void newClientConnects(int sock, std::vector<pollfd> *pfds, int i);
+        void newClientConnects(int sock, std::vector<pollfd> &pfds);
         void existingClientMessage(std::vector<pollfd> &pfds, int i);
         bool didClientAuthenticate(std::string &pass);
         
