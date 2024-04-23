@@ -20,8 +20,8 @@ Client::Client(int fd) : _fd(fd)
 {
 	_isOperator = false;
 	_isAuthenticated = false;
-	_nickname = "Anon";
-	_username = "Anon";
+	_nickname = "Anonymous";
+	_username = "Anonymous";
 }
 // Client::Client(std::string nickname, std::string username)
 // {
