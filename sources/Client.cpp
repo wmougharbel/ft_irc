@@ -1,17 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 18:45:10 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:45:10 by walid            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-
 #include "../includes/Client.hpp"
 
 Client::Client(){}
@@ -108,6 +94,16 @@ void    Client::setUsername(std::string username)
 void	Client::setClientPassword(std::string clientPassword)
 {
 	_clientPassword = clientPassword;
+}
+
+int	Client::getFd() const
+{
+	return (_fd);
+}
+
+void	Client::setFd(int fd)
+{
+	_fd = fd;
 }
 
 void	Client::promote()
