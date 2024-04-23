@@ -1,51 +1,43 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 18:45:10 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 18:45:10 by walid            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-
 #include "../includes/Client.hpp"
 
 Client::Client(){}
 
-Client::Client(std::string nickname, std::string username)
+Client::Client(int fd) : _fd(fd)
 {
-	if (nickname.empty() || username.empty())
-		throw (std::runtime_error("Nickname and username cannot be empty!"));
-	_fd = -1;
 	_isOperator = false;
 	_isAuthenticated = false;
-	_nickname = nickname;
-	_username = username;
+	_nickname = "Anonymous";
+	_username = "Anonymous";
 }
+// Client::Client(std::string nickname, std::string username)
+// {
+// 	if (nickname.empty() || username.empty())
+// 		throw (std::runtime_error("Nickname and username cannot be empty!"));
+// 	_isOperator = false;
+// 	_isAuthenticated = false;
+// 	_nickname = nickname;
+// 	_username = username;
+// }
 
-Client::Client (const Client &copy)
-{
-	_isOperator = copy._isOperator;
-	_isAuthenticated = copy._isAuthenticated;
-	_nickname = copy._nickname;
-	_username = copy._username;
-}
+// Client::Client (const Client &copy)
+// {
+// 	_isOperator = copy._isOperator;
+// 	_isAuthenticated = copy._isAuthenticated;
+// 	_nickname = copy._nickname;
+// 	_username = copy._username;
+// }
 
-Client  &Client::operator=(const Client &object)
-{
-	if (this != &object)
-	{
-		_isOperator = object._isOperator;
-		_isAuthenticated = object._isAuthenticated;
-		_nickname = object._nickname;
-		_username = object._username;
-	}
-	return (*this);
-}
+// Client  &Client::operator=(const Client &object)
+// {
+// 	if (this != &object)
+// 	{
+// 		_isOperator = object._isOperator;
+// 		_isAuthenticated = object._isAuthenticated;
+// 		_nickname = object._nickname;
+// 		_username = object._username;
+// 	}
+// 	return (*this);
+// }
 
 Client::~Client(){}
 
@@ -72,6 +64,11 @@ std::string Client::getUsername() const
 std::string Client::getClientPassword() const
 {
 	return (_clientPassword);
+}
+
+int Client::getFd() const
+{
+	return (_fd);
 }
 
 void    Client::setOperator(bool isOperator)

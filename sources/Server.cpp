@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:43:40 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/23 19:33:39 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,29 +103,13 @@ void Server::startServer(void)
                 if (i == 0)
                 {
                     newClientConnects(_socket, _pfd);
-                    break;
+                    // break;
                 }
                 else
                     existingClientMessage(_pfd, i);
             }
         }
     }
-    // if (isRunning == false)
-    // {
-    //     if (_socket != -1)
-    //     {
-    //         close(_socket);
-    //         _socket = -1; // Reset socket to invalid value
-    //     }
-    //     for (size_t i = 1; i < _pfd.size(); i++) // Close any open client sockets
-    //     {
-    //         if (_pfd[i].fd != -1)
-    //         {
-    //             close(_pfd[i].fd);
-    //             _pfd[i].fd = -1; // Reset client socket to invalid value
-    //         }
-    //     }
-    // }
 }
 
 std::string Server::getPassword(void) const
@@ -133,22 +117,25 @@ std::string Server::getPassword(void) const
     return _password;
 }
 
-void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)//newClientConnects(int sock, std::vector<pollfd> &pfds, int i)
+void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)
 {
-    int         newClient;
+    int         newClientFd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
 
-    newClient = accept(sock, (sockaddr *)&addr, &size);
-    if (newClient == -1)
+    newClientFd = accept(sock, (sockaddr *)&addr, &size);
+    if (newClientFd == -1)
         throw std::runtime_error("Error : Failed to accept client on the server socket!");
     else
     {
-        pollfd clientFd;
-        clientFd.fd = newClient;
-        clientFd.events = POLLIN;
-        clientFd.revents = 0;
-        pfds.push_back(clientFd);
+        pollfd eachNewClient;
+        eachNewClient.fd = newClientFd;
+        eachNewClient.events = POLLIN;
+        eachNewClient.revents = 0;
+        pfds.push_back(eachNewClient);
+
+        Client newClient = Client(newClientFd);
+        _clients.push_back(newClient);
     }
 }
 
@@ -156,39 +143,76 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
 {
     std::string buf;
     char tempBuf[1024];
-    std::string clientPass;
+    std::string initialMsgs;
 
     while (true)
     {
         int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
-        if (readBytes == -1)
-            throw std::runtime_error("Error : reading data from client!");
+        if (readBytes < 0)
+        {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                break;
+            else
+                throw std::runtime_error("Error : reading data from client!");
+        }
         else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
         {
             if (close(pfds[i].fd) == -1)
                 throw std::runtime_error("Error : closing client socket!");
-            std::cout << "client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+            displayTime();
+            std::cout << _clients[i - 1].getNickname() << " left the server!" << std::endl;
+            for(size_t j = 0; j < _clients.size(); j++)
+            {
+                if(_clients[j].getFd() == pfds[i].fd)
+                {
+                    _clients.erase(_clients.begin() + j);
+                    break;
+                }
+            }
             pfds.erase(pfds.begin() + i);
-            break;
-        }
-        char *end = strstr(tempBuf, "\r\n");
-        buf.append(tempBuf, end - tempBuf);
-        _messages.push_back(buf);
-        std::cout << buf << std::endl;
-        clientPass = _messages[0].substr(5, std::string::npos);
-        if (didClientAuthenticate(clientPass))
-        {
-            std::cout << "Welcome Darling (british accent)" << std::endl;
-            clientPass.clear();
-            break;
+            return;
         }
         else
         {
-            std::cout << "Client not authenticated, disconnecting..." << std::endl;
-            if (close(pfds[i].fd) == -1)
+            char *end = strstr(tempBuf, "\r\n");
+            buf.append(tempBuf, end - tempBuf);
+            _messages.push_back(buf);
+            buf.clear();
+        }
+        if (_messages.size() >= 3)
+        {
+            initialMsgs = _messages[0].substr(5, std::string::npos);
+            if (didClientAuthenticate(initialMsgs))
+            {
+                std::string nickname = _messages[1].substr(5);
+                _clients[i - 1].setNickname(nickname);
+
+                std::string userMessage = _messages[2];
+                size_t start = userMessage.find(' ');
+                if (start != std::string::npos)
+                {
+                    size_t end = userMessage.find(' ', start + 1);
+                    std::string username = userMessage.substr(start + 1);
+                    if (end != std::string::npos)
+                    {
+                        std::string username = userMessage.substr(start + 1, end - start - 1);
+                        _clients[i - 1].setUsername(username); 
+                    }
+                }
+                displayTime();
+                std::cout << "Welcome to the IRC server, " << _clients[i - 1].getNickname() << ". Don't you get too comfortable.." << std::endl;
+            }
+            else
+            {
+                displayTime();
+                std::cout << "Sorry " << _clients[i - 1].getNickname() << ". You couldn't authenticate. Get the F out!!" << std::endl;
+                if (close(pfds[i].fd) == -1)
                     throw std::runtime_error("Error: closing client socket!");
-            std::cout << "Client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
-            pfds.erase(pfds.begin() + i);
+                displayTime();
+                std::cout << _clients[i - 1].getNickname() << " thought he's a hacker. Got booted. Hahaha!" << std::endl;
+                pfds.erase(pfds.begin() + i);
+            }
+            _messages.clear();
             break;
         }
     }
@@ -208,6 +232,18 @@ bool Server::didClientAuthenticate(std::string &pass)
         return true;
     else
         return false;
+}
+
+void Server::displayTime(void)
+{
+    time_t currentTime;
+    char dateString[50];
+    
+    time(&currentTime);
+    tm *localTime = localtime(&currentTime);
+    strftime(dateString, sizeof(dateString), "%d-%m-%Y (%H:%M:%S) : ", localTime);
+
+    std::cout << dateString;
 }
 
 void SignalHandler(int signum)
