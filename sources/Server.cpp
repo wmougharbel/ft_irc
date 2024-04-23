@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/23 17:27:37 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:12:40 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,8 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
         {
             if (close(pfds[i].fd) == -1)
                 throw std::runtime_error("Error : closing client socket!");
-            std::cout << "client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+            displayTime();
+            std::cout << _clients[i - 1].getNickname() << " left the server!" << std::endl;
             for(size_t j = 0; j < _clients.size(); j++)
             {
                 if(_clients[j].getFd() == pfds[i].fd)
@@ -187,25 +188,28 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
                 _clients[i - 1].setNickname(nickname);
 
                 std::string userMessage = _messages[2];
-                size_t spacePos = userMessage.find(' ');
-                if (spacePos != std::string::npos)
+                size_t start = userMessage.find(' ');
+                if (start != std::string::npos)
                 {
-                    size_t nextSpacePos = userMessage.find(' ', spacePos + 1);
-                    std::string username = userMessage.substr(spacePos + 1);
-                    if (nextSpacePos != std::string::npos)
+                    size_t end = userMessage.find(' ', start + 1);
+                    std::string username = userMessage.substr(start + 1);
+                    if (end != std::string::npos)
                     {
-                        std::string username = userMessage.substr(spacePos + 1, nextSpacePos - spacePos - 1);
+                        std::string username = userMessage.substr(start + 1, end - start - 1);
                         _clients[i - 1].setUsername(username); 
                     }
                 }
-                std::cout << "Welcome to the IRC server " << _clients[i - 1].getNickname() << ". Don't you get too comfortable.." << std::endl;
+                displayTime();
+                std::cout << "Welcome to the IRC server, " << _clients[i - 1].getNickname() << ". Don't you get too comfortable.." << std::endl;
             }
             else
             {
-                std::cout << "Sorry " << _clients[i - 1].getNickname() << ". Your couldn't authenticate. Get Out!!" << std::endl;
+                displayTime();
+                std::cout << "Sorry " << _clients[i - 1].getNickname() << ". You couldn't authenticate. Get the F out!!" << std::endl;
                 if (close(pfds[i].fd) == -1)
                     throw std::runtime_error("Error: closing client socket!");
-                std::cout << "Client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+                displayTime();
+                std::cout << _clients[i - 1].getNickname() << " thought he's a hacker. Got booted. Hahaha!" << std::endl;
                 pfds.erase(pfds.begin() + i);
             }
             _messages.clear();
@@ -228,6 +232,18 @@ bool Server::didClientAuthenticate(std::string &pass)
         return true;
     else
         return false;
+}
+
+void Server::displayTime(void)
+{
+    time_t currentTime;
+    char dateString[50];
+    
+    time(&currentTime);
+    tm *localTime = localtime(&currentTime);
+    strftime(dateString, sizeof(dateString), "%d-%m-%Y (%H:%M:%S) : ", localTime);
+
+    std::cout << dateString;
 }
 
 void SignalHandler(int signum)

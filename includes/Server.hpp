@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 22:21:16 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:09:51 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Server
         void newClientConnects(int sock, std::vector<pollfd> &pfds);
         void existingClientMessage(std::vector<pollfd> &pfds, int i);
         bool didClientAuthenticate(std::string &pass);
-        
+        void displayTime(void); 
         //Channel* makeChannel(const std::string &name);
         // void onClientDisconnect(int fd);
         // std::string readMessage(int fd);
