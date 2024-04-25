@@ -3,24 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 21:38:19 by amurawsk         ###   ########.fr       */
+/*   Updated: 2024/04/25 16:36:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
-Channel::Channel(const std::string& name, const Client& firstMember) : name(name), _isinviteOnly(false), _istopicRestricted(false), _ispassword(false), _limit(-1){
+Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(false), _istopicRestricted(false),
+				 _ispassword(false),_islimit(false), _istopicRestricted(false);{
 	_members.push_back(firstMember);
 	_operators.push_back(firstMember);
+	_topic = "Default Topic"
+	_password = "";
 }
 
 Channel::~Channel() {}
 
+void Channel::setIsLimit(bool islimit){
+	this->_islimit = islimit;
+}
+
 void Channel::setlimit(const int limit){
 	this->_limit = limit;
+}
+
+int Channel::getLimit() const{
+	return _limit;
 }
 
 
@@ -55,6 +66,10 @@ bool Channel::isInviteOnly() const {
 void Channel::setChannelKey(const std::string& key) {
 	this->_ChannelKey = key;
 }
+bool isPassword() const {
+	return _ispassword;
+}
+
 
 bool Channel::checkChannelKey(const std::string& key) const {
 	return key == _ChannelKey;
@@ -62,6 +77,10 @@ bool Channel::checkChannelKey(const std::string& key) const {
 
 void Channel::setOperatorPrivileges(const Client& member) {
 	_operators.push_back(member);
+}
+
+void Channel::addMember(const Client& member){
+	_members.push_back(member);
 }
 
 void Channel::removeOperatorPrivileges(const std::string& nickname) {
