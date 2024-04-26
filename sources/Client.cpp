@@ -96,15 +96,10 @@ void    Client::setUsername(std::string username)
 // 	_clientPassword = clientPassword;
 // }
 
-int	Client::getFd() const
-{
-	return (_fd);
-}
-
-void	Client::setFd(int fd)
-{
-	_fd = fd;
-}
+// void	Client::setFd(int fd)
+// {
+// 	_fd = fd;
+// }
 
 void	Client::promote()
 {
