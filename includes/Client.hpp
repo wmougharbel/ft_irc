@@ -25,9 +25,10 @@ class Client
 		bool		_isAuthenticated;
 		std::string	_nickname;
 		std::string	_username;
-		std::vector<Channel> _channel;
+		// std::vector<Channel> _channel;
 
 	public:
+		Client();
 		Client(int fd);
 		// Client (std::string nickname, std::string username);
 		// Client (const Client &);

@@ -20,6 +20,7 @@
 # include "Client.hpp"
 # include "Server.hpp"
 # include "Channel.hpp"
+# include <map>
 
 void    validateInput(std::string port, std::string password);
 

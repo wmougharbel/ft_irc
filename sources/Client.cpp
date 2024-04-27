@@ -61,10 +61,10 @@ std::string Client::getUsername() const
 	return (_username);
 }
 
-std::string Client::getClientPassword() const
-{
-	return (_clientPassword);
-}
+// std::string Client::getClientPassword() const
+// {
+// 	return (_clientPassword);
+// }
 
 int Client::getFd() const
 {
@@ -91,20 +91,15 @@ void    Client::setUsername(std::string username)
 	_username = username;
 }
 
-void	Client::setClientPassword(std::string clientPassword)
-{
-	_clientPassword = clientPassword;
-}
+// void	Client::setClientPassword(std::string clientPassword)
+// {
+// 	_clientPassword = clientPassword;
+// }
 
-int	Client::getFd() const
-{
-	return (_fd);
-}
-
-void	Client::setFd(int fd)
-{
-	_fd = fd;
-}
+// void	Client::setFd(int fd)
+// {
+// 	_fd = fd;
+// }
 
 void	Client::promote()
 {
