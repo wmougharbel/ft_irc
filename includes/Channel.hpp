@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/25 16:35:26 by marvin           ###   ########.fr       */
+/*   Updated: 2024/04/25 20:53:51 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ class Channel {
 private:
 	std::string _name; 
 
-	std::vector<Client>	_members;
-	std::vector<Client>	_operators;
+	std::vector<Client *>	_members;
+	std::vector<Client *>	_operators;
 
 	std::string	_topic;
 	std::string	_ChannelKey; 

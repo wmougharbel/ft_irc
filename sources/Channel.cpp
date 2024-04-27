@@ -6,16 +6,16 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/25 16:36:46 by marvin           ###   ########.fr       */
+/*   Updated: 2024/04/25 21:00:09 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
 Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(false), _istopicRestricted(false),
-				 _ispassword(false),_islimit(false), _istopicRestricted(false);{
-	_members.push_back(firstMember);
-	_operators.push_back(firstMember);
+				 _ispassword(false),_islimit(false), _istopicRestricted(false){
+	_members.push_back(&firstMember);
+	_operators.push_back(&firstMember);
 	_topic = "Default Topic"
 	_password = "";
 }
