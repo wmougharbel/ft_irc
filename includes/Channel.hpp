@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/27 12:21:25 by marvin           ###   ########.fr       */
+/*   Updated: 2024/04/28 15:00:12 by amurawsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@
 
 class Channel {
 private:
-	std::string _name; 
+	std::string _name;
 
 	std::vector<Client *>	_members;
 	std::vector<Client *>	_operators;
 
 	std::string	_topic;
 	std::string	_ChannelKey; 
-	std::string _password;
+	std::string	_password;
 
 	bool		_isinviteOnly;
 	bool		_islimit;
