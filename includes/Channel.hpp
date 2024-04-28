@@ -6,7 +6,7 @@
 /*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/28 15:00:12 by amurawsk         ###   ########.fr       */
+/*   Updated: 2024/04/28 15:06:35 by amurawsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ class Channel {
 private:
 	std::string _name;
 
-	std::vector<Client *>	_members;
-	std::vector<Client *>	_operators;
+	std::vector<Client >	_members;
+	std::vector<Client >	_operators;
 
 	std::string	_topic;
 	std::string	_ChannelKey; 
@@ -41,7 +41,7 @@ public:
 
 	void setIsLimit(bool islimit);
 	void setlimit(const int limit);
-	int  getLimit();
+	int  getLimit() const;
 	
 
 	void setTopic(const std::string& topic);
@@ -53,7 +53,7 @@ public:
 	bool isInviteOnly() const;
 
 	void setChannelKey(const std::string& key);
-	bool IsPassword() const;
+	bool isPassword() const;
 	bool checkChannelKey(const std::string& key) const;
 
 	void setOperatorPrivileges(const Client &member);

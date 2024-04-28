@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/27 12:21:36 by marvin           ###   ########.fr       */
+/*   Updated: 2024/04/28 15:07:15 by amurawsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
 Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(false), _istopicRestricted(false),
-				 _ispassword(false),_islimit(false), _istopicRestricted(false){
-	_members.push_back(&firstMember);
-	_operators.push_back(&firstMember);
-	_topic = "Default Topic"
+				 _ispassword(false),_islimit(false){
+	_members.push_back(firstMember);
+	_operators.push_back(firstMember);
+	_topic = "Default Topic";
 	_password = "";
 }
 
@@ -66,6 +66,7 @@ bool Channel::isInviteOnly() const {
 void Channel::setChannelKey(const std::string& key) {
 	this->_ChannelKey = key;
 }
+
 bool isPassword() const {
 	return _ispassword;
 }
