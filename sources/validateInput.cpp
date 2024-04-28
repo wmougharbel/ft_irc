@@ -43,3 +43,14 @@ void    validateInput(std::string port, std::string password)
     if (!getPasswordLength(password))
         throw (std::runtime_error("Password argument should be between 4 and 8 characters long!"));
 }
+
+std::vector<std::string> ft_split(std::string message)
+{
+    std::vector<std::string> split;
+    std::stringstream ss(message);
+    std::string token;
+
+    while (ss >> token)
+        split.push_back(token);
+    return (split);
+}

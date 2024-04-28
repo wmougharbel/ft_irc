@@ -21,7 +21,11 @@
 # include "Server.hpp"
 # include "Channel.hpp"
 # include <map>
+# include <sstream>
 
 void    validateInput(std::string port, std::string password);
+std::vector<std::string> ft_split(std::string message);
+void    parser(std::string message);
+
 
 #endif

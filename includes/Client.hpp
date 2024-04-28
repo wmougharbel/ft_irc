@@ -14,6 +14,7 @@
 # define CLIENT_HPP
 
 # include "Irc.hpp"
+# include <vector>
 
 class Channel;
 

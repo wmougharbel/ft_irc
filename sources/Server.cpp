@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/25 17:38:32 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/28 22:26:56 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,33 +167,36 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
                     ++it;
             }
             pfds.erase(pfds.begin() + i);
-            return;
+            return ;
         }
         else
         {
             char *end = strstr(tempBuf, "\r\n");
             buf.append(tempBuf, end - tempBuf);
-            _messages.push_back(buf);
+            // _messages.push_back(buf);
+            //parser here
+            parser(buf);
+            std::cout << buf << std::endl;
             buf.clear();
         }
-        if (_messages.size() >= 3)
-        {
-            firstMsg = _messages[0].substr(5, std::string::npos);
-            if (didClientAuthenticate(firstMsg))
-            {
-                setClientInfo(pfds[i].fd);
-                printMessage(WELCOME, pfds[i].fd);
-            }
-            else
-            {
-                printMessage(NO_AUTH, pfds[i].fd);
-                if (close(pfds[i].fd) == -1)
-                    throw std::runtime_error("Error: closing client socket!");
-                pfds.erase(pfds.begin() + i);
-            }
-            _messages.clear();
-            break;
-        }
+        // if (_messages.size() >= 3)
+        // {
+        //     firstMsg = _messages[0].substr(5, std::string::npos);
+        //     if (didClientAuthenticate(firstMsg))
+        //     {
+        //         setClientInfo(pfds[i].fd);
+        //         printMessage(WELCOME, pfds[i].fd);
+        //     }
+        //     else
+        //     {
+        //         printMessage(NO_AUTH, pfds[i].fd);
+        //         if (close(pfds[i].fd) == -1)
+        //             throw std::runtime_error("Error: closing client socket!");
+        //         pfds.erase(pfds.begin() + i);
+        //     }
+        //     _messages.clear();
+        //     break;
+        // }
     }
 }
 
