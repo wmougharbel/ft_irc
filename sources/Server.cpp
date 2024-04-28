@@ -6,13 +6,11 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:43:40 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:38:32 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-
-#define SERVER_IP "127.0.0.1"
 
 bool isRunning = false;
 
@@ -33,14 +31,12 @@ Server::~Server()
         close(_socket);
         _socket = -1; // Reset socket to invalid value
     }
-
-    // Close any open client sockets
-    for (size_t i = 1; i < _pfd.size(); i++)
+    for (std::vector<pollfd>::iterator it = _pfd.begin() + 1; it != _pfd.end(); ++it)
     {
-        if (_pfd[i].fd != -1)
+        if (it->fd != -1)
         {
-            close(_pfd[i].fd);
-            _pfd[i].fd = -1; // Reset client socket to invalid value
+            close(it->fd);
+            it->fd = -1;
         }
     }
 }
@@ -95,37 +91,24 @@ void Server::startServer(void)
     {
         if (poll(&_pfd[0], _pfd.size(), -1) < 0)
             throw std::runtime_error("Error : Failed to poll on the server socket!");
-        // check for events on each socket in the _pfd
-        for (size_t i = 0; i < _pfd.size(); i++)
+        for (std::vector<pollfd>::iterator it = _pfd.begin(); it != _pfd.end(); ++it)
         {
-            if((_pfd[i].revents & POLLIN) == POLLIN)
+            if ((it->revents & POLLIN) == POLLIN)
             {
-                if (i == 0)
+                if (it->fd == _socket)
                 {
                     newClientConnects(_socket, _pfd);
                     break;
                 }
                 else
-                    existingClientMessage(_pfd, i);
+                {
+                    size_t index = std::distance(_pfd.begin(), it);
+                    existingClientMessage(_pfd, index);
+                    break;
+                }
             }
         }
     }
-    // if (isRunning == false)
-    // {
-    //     if (_socket != -1)
-    //     {
-    //         close(_socket);
-    //         _socket = -1; // Reset socket to invalid value
-    //     }
-    //     for (size_t i = 1; i < _pfd.size(); i++) // Close any open client sockets
-    //     {
-    //         if (_pfd[i].fd != -1)
-    //         {
-    //             close(_pfd[i].fd);
-    //             _pfd[i].fd = -1; // Reset client socket to invalid value
-    //         }
-    //     }
-    // }
 }
 
 std::string Server::getPassword(void) const
@@ -133,22 +116,24 @@ std::string Server::getPassword(void) const
     return _password;
 }
 
-void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)//newClientConnects(int sock, std::vector<pollfd> &pfds, int i)
+void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)
 {
-    int         newClient;
+    int         clientFd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
 
-    newClient = accept(sock, (sockaddr *)&addr, &size);
-    if (newClient == -1)
+    clientFd = accept(sock, (sockaddr *)&addr, &size);
+    if (clientFd == -1)
         throw std::runtime_error("Error : Failed to accept client on the server socket!");
     else
     {
-        pollfd clientFd;
-        clientFd.fd = newClient;
-        clientFd.events = POLLIN;
-        clientFd.revents = 0;
-        pfds.push_back(clientFd);
+        pollfd eachNewClient;
+        eachNewClient.fd = clientFd;
+        eachNewClient.events = POLLIN;
+        eachNewClient.revents = 0;
+        pfds.push_back(eachNewClient);
+
+        _clients[clientFd] = Client(clientFd);
     }
 }
 
@@ -156,39 +141,57 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
 {
     std::string buf;
     char tempBuf[1024];
-    std::string clientPass;
+    std::string firstMsg;
 
     while (true)
     {
         int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
-        if (readBytes == -1)
-            throw std::runtime_error("Error : reading data from client!");
+        if (readBytes < 0)
+        {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+                break;
+            else
+                throw std::runtime_error("Error : reading data from client!");
+        }
         else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
         {
             if (close(pfds[i].fd) == -1)
                 throw std::runtime_error("Error : closing client socket!");
-            std::cout << "client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
+            printMessage(CLIENT_LEFT, pfds[i].fd);
+
+            for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();)
+            {
+                if (it->first == pfds[i].fd)
+                    it = _clients.erase(it);
+                else
+                    ++it;
+            }
             pfds.erase(pfds.begin() + i);
-            break;
-        }
-        char *end = strstr(tempBuf, "\r\n");
-        buf.append(tempBuf, end - tempBuf);
-        _messages.push_back(buf);
-        std::cout << buf << std::endl;
-        clientPass = _messages[0].substr(5, std::string::npos);
-        if (didClientAuthenticate(clientPass))
-        {
-            std::cout << "Welcome Darling (british accent)" << std::endl;
-            clientPass.clear();
-            break;
+            return;
         }
         else
         {
-            std::cout << "Client not authenticated, disconnecting..." << std::endl;
-            if (close(pfds[i].fd) == -1)
+            char *end = strstr(tempBuf, "\r\n");
+            buf.append(tempBuf, end - tempBuf);
+            _messages.push_back(buf);
+            buf.clear();
+        }
+        if (_messages.size() >= 3)
+        {
+            firstMsg = _messages[0].substr(5, std::string::npos);
+            if (didClientAuthenticate(firstMsg))
+            {
+                setClientInfo(pfds[i].fd);
+                printMessage(WELCOME, pfds[i].fd);
+            }
+            else
+            {
+                printMessage(NO_AUTH, pfds[i].fd);
+                if (close(pfds[i].fd) == -1)
                     throw std::runtime_error("Error: closing client socket!");
-            std::cout << "Client no. [" << pfds[i].fd << "] disconnected!" << std::endl;
-            pfds.erase(pfds.begin() + i);
+                pfds.erase(pfds.begin() + i);
+            }
+            _messages.clear();
             break;
         }
     }
@@ -208,6 +211,43 @@ bool Server::didClientAuthenticate(std::string &pass)
         return true;
     else
         return false;
+}
+
+void Server::displayTime(void)
+{
+    time_t currentTime;
+    char dateString[50];
+    
+    time(&currentTime);
+    tm *localTime = localtime(&currentTime);
+    strftime(dateString, sizeof(dateString), "%d-%m-%Y (%H:%M:%S) : ", localTime);
+
+    std::cout << dateString;
+}
+
+void Server::setClientInfo(int key)
+{
+    std::string nickname = _messages[1].substr(5);
+    _clients[key].setNickname(nickname);
+
+    std::string userMessage = _messages[2];
+    size_t start = userMessage.find(' ');
+    if (start != std::string::npos)
+    {
+        size_t end = userMessage.find(' ', start + 1);
+        std::string username = userMessage.substr(start + 1);
+        if (end != std::string::npos)
+        {
+            std::string username = userMessage.substr(start + 1, end - start - 1);
+            _clients[key].setUsername(username); 
+        }
+    }
+}
+
+void Server::printMessage(const std::string& message, int key)
+{
+    displayTime();
+    std::cout << _clients[key].getNickname() << message << std::endl;
 }
 
 void SignalHandler(int signum)

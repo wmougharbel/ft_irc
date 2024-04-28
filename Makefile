@@ -19,9 +19,9 @@ all: $(NAME)
 
 $(NAME): $(OBJECTS)
 	@$(CPP) $(CPPFLAGS) $(OBJECTS) -o $(NAME)
+	@echo "\n==========Compiled Successfully==========\n"
 	@sleep 1
 	@clear
-	@echo "\n==========Compiled Successfully==========\n"
 
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -I. -c $< -o $@
@@ -32,5 +32,7 @@ clean:
 fclean: clean
 	@$(RM) $(NAME)
 	@echo "\n==========Cleaned Successfully==========\n"
+	@sleep 1
+	@clear
 
 re: fclean all

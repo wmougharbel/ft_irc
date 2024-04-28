@@ -20,35 +20,33 @@
 class Client
 {
 	private:
+		int			_fd;
 		bool		_isOperator;
 		bool		_isAuthenticated;
 		std::string	_nickname;
 		std::string	_username;
-		std::string	_clientPassword;
-		//Channel		_channel;
-		Client();
+		// std::vector<Channel> _channel;
 
 	public:
-		Client (std::string nickname, std::string username);
-		Client (const Client &);
-		Client	&operator=(const Client &);
+		Client();
+		Client(int fd);
+		// Client (std::string nickname, std::string username);
+		// Client (const Client &);
+		// Client	&operator=(const Client &);
 		~Client();
-
-		//vaiables
 
 		//getters
 		bool		getOperator() const;
 		bool		getAuthStatus() const;
 		std::string	getNickname() const;
 		std::string	getUsername()const;
-		std::string	getClientPassword() const;
+		int getFd() const;
 
 		//setters
 		void	setOperator(bool isOperator);
 		void	setAuthStatus(bool status);
 		void	setNickname(std::string nickname);
 		void	setUsername(std::string username);
-		void	setClientPassword(std::string clientPassword);
 		void	setServerPassword(std::string password);
 
 		//functions

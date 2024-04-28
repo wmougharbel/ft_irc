@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:31:39 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/26 18:23:33 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,15 @@
 # include <stdlib.h>
 # include <algorithm>
 # include <err.h>
-# include "Server.hpp"
+# include "../includes/Client.hpp"
+# include <map>
+
+#define SERVER_IP "127.0.0.1"
+#define CLIENT_LEFT " left the server!"
+#define WELCOME ", Welcome to the IRC server. Don't get too comfortable.."
+#define NO_AUTH ", You couldn't authenticate. Get the F out!!"
+
+class Client;
 
 class Server
 {
@@ -37,6 +45,7 @@ class Server
         int _socket;
         std::vector<pollfd> _pfd;
         std::vector<std::string> _messages;
+        std::map<int, Client> _clients;
         // std::vector<Channel *> _channList;
         void _initializeSocket(void);
         void _makeSocketNonBlocking(int sock);
@@ -51,7 +60,9 @@ class Server
         void newClientConnects(int sock, std::vector<pollfd> &pfds);
         void existingClientMessage(std::vector<pollfd> &pfds, int i);
         bool didClientAuthenticate(std::string &pass);
-        
+        void displayTime(void);
+        void setClientInfo(int key);
+        void printMessage(const std::string& message, int key);
         //Channel* makeChannel(const std::string &name);
         // void onClientDisconnect(int fd);
         // std::string readMessage(int fd);
