@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:50:26 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/28 15:06:35 by amurawsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,33 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "../includes/Client.hpp"
 
 class Channel {
 private:
-	std::string name; 
-	std::vector<std::string> members;
-	std::string topic; 
-	bool isinviteOnly; 
-	bool istopicRestricted;
-	bool ispassword;
-	int limit;
-	std::string ChannelKey; 
-	std::vector <std::string> operators;
+	std::string _name;
+
+	std::vector<Client >	_members;
+	std::vector<Client >	_operators;
+
+	std::string	_topic;
+	std::string	_ChannelKey; 
+	std::string	_password;
+
+	bool		_isinviteOnly;
+	bool		_islimit;
+	bool		_istopicRestricted;
+	bool		_ispassword;
+	int			_limit;
 
 public:
-	Channel(const std::string& name,const std::string& firstMember);
+	Channel(const std::string& name,const Client& firstMember);
 	~Channel(); 
 
+	void setIsLimit(bool islimit);
 	void setlimit(const int limit);
+	int  getLimit() const;
+	
 
 	void setTopic(const std::string& topic);
 	std::string getTopic() const;
@@ -44,15 +53,16 @@ public:
 	bool isInviteOnly() const;
 
 	void setChannelKey(const std::string& key);
+	bool isPassword() const;
 	bool checkChannelKey(const std::string& key) const;
 
-	void setOperatorPrivileges(const std::string &member);
+	void setOperatorPrivileges(const Client &member);
 	void removeOperatorPrivileges(const std::string &member);
 	bool hasOperatorPrivileges(const std::string &member) const;
 
+	void addMember(const Client &member);
 	void removeMember(const std::string& nickname);
 	bool isMember(const std::string& nickname) const;
-
 };
 
 #endif
