@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/28 15:07:15 by amurawsk         ###   ########.fr       */
+/*   Updated: 2024/04/28 16:33:16 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void Channel::setChannelKey(const std::string& key) {
 	this->_ChannelKey = key;
 }
 
-bool isPassword() const {
+bool Channel::isPassword() const {
 	return _ispassword;
 }
 

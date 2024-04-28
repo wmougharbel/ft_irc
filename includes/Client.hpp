@@ -15,7 +15,7 @@
 
 # include "Irc.hpp"
 
-// class MockServer;
+class Channel;
 
 class Client
 {
@@ -23,6 +23,7 @@ class Client
 		int			_fd;
 		bool		_isOperator;
 		bool		_isAuthenticated;
+		std::vector <Channel> _channels;
 		std::string	_nickname;
 		std::string	_username;
 		// std::vector<Channel> _channel;
@@ -52,6 +53,7 @@ class Client
 		//functions
 		void	promote();
 		void	authenticate();
+		void	join(Channel channel);
 		void	kick(const Client &toKick);
 };
 

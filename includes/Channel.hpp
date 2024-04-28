@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amurawsk <amurawsk@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/04/28 15:06:35 by amurawsk         ###   ########.fr       */
+/*   Updated: 2024/04/28 16:32:33 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <vector>
 #include <iostream>
 #include "../includes/Client.hpp"
+
+class Client;
 
 class Channel {
 private:

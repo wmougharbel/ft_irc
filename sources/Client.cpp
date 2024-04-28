@@ -131,3 +131,14 @@ void	Client::setServerPassword(std::string password)
 	// _server.setPassword(password);
 	// std::cout << "Server password: " << _server.getPassword() << std::endl;
 }
+
+void	Client::join(Channel channel)
+{
+	if (channel.isMember(_nickname))
+	{
+		std::cerr << _nickname << " is already a member here" << std::endl;
+		return ;
+	}
+	_channels.push_back(channel);
+	_channels[_channels.size() - 1].addMember(*this);
+}
