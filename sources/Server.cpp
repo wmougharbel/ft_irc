@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/25 17:38:32 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/27 13:26:02 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,18 +265,24 @@ int main(int argc, char *argv[])
     
     signal(SIGINT, SignalHandler);
     (void)argc;
+    (void)argv;
     
-    Server serv(argv[1], argv[2]);
+    // Server serv(argv[1], argv[2]);
     isRunning = true;
     
-    try
-    {
-        serv.startServer();
-        return 0;
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
+    // try
+    // {
+    //     serv.startServer();
+    //     return 0;
+    // }
+    // catch(const std::exception& e)
+    // {
+    //     std::cerr << e.what() << std::endl;
+    //     return 1;
+    // }
+
+    Client c1(1);
+    Channel *chan = new Channel("BBC", "Mia");
+    c1.setNickname("Walid");
+    c1.join(chan);
 }

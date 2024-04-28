@@ -131,3 +131,15 @@ void	Client::setServerPassword(std::string password)
 	// _server.setPassword(password);
 	// std::cout << "Server password: " << _server.getPassword() << std::endl;
 }
+
+void	Client::join(Channel *channel)
+{
+	if (channel->isMember(_nickname))
+		return ();
+	_channel = channel;
+	_channel->addMember(_nickname);
+	std::cout << "Nickname to add: " << _nickname << std::endl;
+
+	for (unsigned int i = 0; i < _channel->members.size(); i++)
+		std::cout << _channel->members[i] << std::endl;
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/22 19:32:52 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/28 16:09:03 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ void Channel::setTopicRestricted(bool topicRestricted) {
 bool Channel::isTopicRestricted() const {
 	return istopicRestricted;
 }
-
-
 
 void Channel::setInviteOnly(bool inviteOnly) {
 	this->isinviteOnly = inviteOnly;
@@ -92,6 +90,11 @@ bool Channel::hasOperatorPrivileges(const std::string& member) const {
 			return true;
 	}
 	return false;
+}
+
+void Channel::addMember(const std::string &nickname)
+{
+	members.push_back(nickname);
 }
 
 void Channel::removeMember(const std::string& nickname) {

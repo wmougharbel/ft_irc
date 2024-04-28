@@ -22,6 +22,7 @@ $(NAME): $(OBJECTS)
 	@echo "\n==========Compiled Successfully==========\n"
 	@sleep 1
 	@clear
+	@./ircserv
 
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -I. -c $< -o $@
