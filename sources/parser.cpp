@@ -24,12 +24,15 @@ void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &
     std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
-void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
+void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass)
 {
-    std::cout << " => Here is where authentication operation will happen." << std::endl;
+    if (serverPass == incoming[1])
+        std::cout << " => client at fd : " << fd << " authenticated" << std::endl;
+    else
+        std::cout << " => client at fd : " << fd << " could not authenticate" << std::endl;
 }
 
-void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
     size_t i;
@@ -55,18 +58,11 @@ void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &cli
 
     case 3:
         std::cout << " => PASS command detected";
-        extractPassword(message, clients, fd);
+        extractPassword(message, clients, fd, pass);
         break;
 
     default:
         std::cout << " => UNKNOWN command" << std::endl;
         break;
     }
-}
-
-void    parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
-{
-    int clientFd = pfds[i].fd;
-    std::vector<std::string>    split = ft_split(message);
-    checkOrder(split, clients, clientFd);
 }

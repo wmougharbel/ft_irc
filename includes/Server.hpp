@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 14:52:23 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/29 17:50:05 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <algorithm>
 # include <err.h>
 # include "../includes/Client.hpp"
+# include "../includes/Irc.hpp"
 # include <map>
 
 #define SERVER_IP "127.0.0.1"
@@ -58,16 +59,14 @@ class Server
         void startServer(void);
         std::string getPassword(void) const;
         void newClient(int sock, std::vector<pollfd> &pfds);
-        void existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);//Orig(std::vector<pollfd> &pfds, int i)
+        void existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);
         bool didClientAuthenticate(std::string &pass);
         void displayTime(void);
         void setClientInfo(int key);
         void printMessage(const std::string& message, int fd);
         void closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
+        void    parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         //Channel* makeChannel(const std::string &name);
-        // void onClientDisconnect(int fd);
-        // std::string readMessage(int fd);
-        // void createChannel(const std::string& name, const std::string& key);
 };
 
 #endif

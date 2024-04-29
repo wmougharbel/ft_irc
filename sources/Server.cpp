@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 15:35:42 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/29 17:54:38 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,6 +238,14 @@ void Server::printMessage(const std::string& message, int fd)
             break;
         }
     }
+}
+
+void    Server::parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
+{
+    int clientFd = pfds[i].fd;
+    std::vector<std::string>    split = ft_split(message);
+    std::string servPass = getPassword();
+    checkOrder(split, clients, clientFd, servPass);
 }
 
 void SignalHandler(int signum)
