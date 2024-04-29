@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 11:35:09 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/29 14:59:48 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,13 @@ void Server::startServer(void)
             {
                 if (it->fd == _socket)
                 {
-                    newClientConnects(_socket, _pfd);
+                    newClient(_socket, _pfd);
                     break;
                 }
                 else
                 {
                     size_t index = std::distance(_pfd.begin(), it);
-                    existingClientMessage(_pfd, index);
+                    existingClient(_pfd, index, _clients);//orig: exitingClient(_pfd, index)
                     break;
                 }
             }
@@ -116,7 +116,7 @@ std::string Server::getPassword(void) const
     return _password;
 }
 
-void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)
+void Server::newClient(int sock, std::vector<pollfd> &pfds)
 {
     int         clientFd;
     sockaddr_in addr = {};
@@ -137,66 +137,93 @@ void Server::newClientConnects(int sock, std::vector<pollfd> &pfds)
     }
 }
 
-void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
+//this is the original function.....
+// void Server::existingClient(std::vector<pollfd> &pfds, int i)
+// {
+//     std::string buf;
+//     char tempBuf[1024];
+//     std::string firstMsg;
+
+//     while (true)
+//     {
+//         int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
+//         if (readBytes < 0)
+//         {
+//             if (errno == EAGAIN || errno == EWOULDBLOCK)
+//                 break;
+//             else
+//                 throw std::runtime_error("Error : reading data from client!");
+//         }
+//         else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
+//         {
+//             if (close(pfds[i].fd) == -1)
+//                 throw std::runtime_error("Error : closing client socket!");
+//             printMessage(CLIENT_LEFT, pfds[i].fd);
+
+//             for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();)
+//             {
+//                 if (it->first == pfds[i].fd)
+//                     it = _clients.erase(it);
+//                 else
+//                     ++it;
+//             }
+//             pfds.erase(pfds.begin() + i);
+//             return ;
+//         }
+//         else
+//         {
+//             char *end = strstr(tempBuf, "\r\n");
+//             buf.append(tempBuf, end - tempBuf);
+//             // _messages.push_back(buf);
+//             //parser here
+//             parser(buf);
+//             buf.clear();
+//         }
+//     }
+// }
+
+//this is the modified funciton
+void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients)
 {
     std::string buf;
     char tempBuf[1024];
     std::string firstMsg;
 
-    while (true)
+    int readBytes = recv(pfds[i].fd, tempBuf, sizeof(tempBuf), 0);
+    if (readBytes < 0)
     {
-        int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
-        if (readBytes < 0)
-        {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-                break;
-            else
-                throw std::runtime_error("Error : reading data from client!");
-        }
-        else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
-        {
-            if (close(pfds[i].fd) == -1)
-                throw std::runtime_error("Error : closing client socket!");
-            printMessage(CLIENT_LEFT, pfds[i].fd);
-
-            for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();)
-            {
-                if (it->first == pfds[i].fd)
-                    it = _clients.erase(it);
-                else
-                    ++it;
-            }
-            pfds.erase(pfds.begin() + i);
-            return ;
-        }
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return;
         else
-        {
-            char *end = strstr(tempBuf, "\r\n");
-            buf.append(tempBuf, end - tempBuf);
-            // _messages.push_back(buf);
-            //parser here
-            parser(buf);
-            buf.clear();
-        }
-        // if (_messages.size() >= 3)
-        // {
-        //     firstMsg = _messages[0].substr(5, std::string::npos);
-        //     if (didClientAuthenticate(firstMsg))
-        //     {
-        //         setClientInfo(pfds[i].fd);
-        //         printMessage(WELCOME, pfds[i].fd);
-        //     }
-        //     else
-        //     {
-        //         printMessage(NO_AUTH, pfds[i].fd);
-        //         if (close(pfds[i].fd) == -1)
-        //             throw std::runtime_error("Error: closing client socket!");
-        //         pfds.erase(pfds.begin() + i);
-        //     }
-        //     _messages.clear();
-        //     break;
-        // }
+            throw std::runtime_error("Error : reading data from client!");
     }
+    else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
+    {
+        closeAll(clients, i, pfds);
+        return;
+    }
+    else
+    {
+        char *end = strstr(tempBuf, "\r\n");
+        buf.append(tempBuf, end - tempBuf);
+        parser(buf);
+        buf.clear();
+    }
+}
+
+void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
+{
+    int clientFd = pfds[i].fd;
+    if (close(clientFd) == -1)
+        throw std::runtime_error("Error : closing client socket!");
+    
+    if (clientFd != -1)
+        printMessage(CLIENT_LEFT, clientFd);
+
+    std::map<int, Client>::iterator it = clients.find(clientFd);
+    if (it != clients.end())
+        clients.erase(it);
+    pfds.erase(pfds.begin() + i);   
 }
 
 // Channel* Server::makeChannel(const std::string &name)
@@ -246,10 +273,17 @@ void Server::setClientInfo(int key)
     }
 }
 
-void Server::printMessage(const std::string& message, int key)
+void Server::printMessage(const std::string& message, int fd)
 {
     displayTime();
-    std::cout << _clients[key].getNickname() << message << std::endl;
+    for (std::vector<pollfd>::iterator it = _pfd.begin() + 1; it != _pfd.end(); ++it)
+    {
+        if (it->fd == fd)
+        {
+            std::cout << "Client at fd : " << fd << message << std::endl;
+            break;
+        }
+    }
 }
 
 void SignalHandler(int signum)

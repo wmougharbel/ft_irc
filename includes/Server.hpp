@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/26 18:23:33 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/29 14:52:23 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,13 @@ class Server
         ~Server();
         void startServer(void);
         std::string getPassword(void) const;
-        void newClientConnects(int sock, std::vector<pollfd> &pfds);
-        void existingClientMessage(std::vector<pollfd> &pfds, int i);
+        void newClient(int sock, std::vector<pollfd> &pfds);
+        void existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);//Orig(std::vector<pollfd> &pfds, int i)
         bool didClientAuthenticate(std::string &pass);
         void displayTime(void);
         void setClientInfo(int key);
-        void printMessage(const std::string& message, int key);
+        void printMessage(const std::string& message, int fd);
+        void closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         //Channel* makeChannel(const std::string &name);
         // void onClientDisconnect(int fd);
         // std::string readMessage(int fd);
