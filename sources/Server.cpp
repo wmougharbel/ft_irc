@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/28 22:26:56 by marvin           ###   ########.fr       */
+/*   Updated: 2024/04/29 11:35:09 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,6 @@ void Server::existingClientMessage(std::vector<pollfd> &pfds, int i)
             // _messages.push_back(buf);
             //parser here
             parser(buf);
-            std::cout << buf << std::endl;
             buf.clear();
         }
         // if (_messages.size() >= 3)

@@ -11,44 +11,59 @@
 /* ************************************************************************** */
 
 #include "../includes/Irc.hpp"
+void extractNickname(std::vector<std::string> incoming)
+{
+    std::cout << " => Client's nickname is : " << "\"" << incoming[1] << "\"" << std::endl;
+}
+
+void extractUsername(std::vector<std::string> incoming)
+{
+    std::cout << " => Client's username is : " << "\"" << incoming[1] << "\"" << std::endl;
+}
+
+void extractPassword(std::vector<std::string> incoming)
+{
+    std::cout << " => Client's password is : " << "\"" << incoming[1] << "\"" << std::endl;
+}
 
 void    checkOrder(std::vector<std::string> message)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
-    size_t  i = 0;
+    size_t i;
 
-    for (i; i < sizeof(commands) / sizeof(commands[0]); i++)
+    for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
         if (message[0] == commands[i])
             break;
     switch (i)
     {
     case 0:
-        std::cout << "Join command detected" << std::endl;
+        std::cout << " => JOIN command detected" << std::endl;
         break;
 
     case 1:
-        std::cout << "Nick command detected" << std::endl;
+        std::cout << " => NICK command detected";
+        extractNickname(message);
         break;
 
     case 2:
-        std::cout << "User command detected" << std::endl;
+        std::cout << " => USER command detected";
+        extractUsername(message);
         break;
 
     case 3:
-        std::cout << "Pass command detected" << std::endl;
+        std::cout << " => PASS command detected";
+        extractPassword(message);
         break;
 
     default:
-        std::cout << "Unknown command" << std::endl;
+        std::cout << " => UNKNOWN command" << std::endl;
         break;
     }
 }
 
 void    parser(std::string message)
 {
-    std::cout << "Message: " << message << std::endl;
     std::vector<std::string>    split = ft_split(message);
-    for (size_t i = 0; i < split.size(); i++)
-        std::cout << i << ": " << split[i] << std::endl;
+    std::cout << "Msg Recvd From Client: " << "\"" << message << "\"";
     checkOrder(split);
 }
