@@ -27,7 +27,10 @@ void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &
 void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass)
 {
     if (serverPass == incoming[1])
-        std::cout << " => client at fd : " << fd << " authenticated" << std::endl;
+    {
+        clients[fd].setAuthStatus(true);
+        std::cout << " => client at fd : " << fd << " authenticated and their auth status is set to : " << clients[fd].getAuthStatus() << std::endl;
+    }
     else
         std::cout << " => client at fd : " << fd << " could not authenticate" << std::endl;
 }
