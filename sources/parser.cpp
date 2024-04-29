@@ -11,22 +11,25 @@
 /* ************************************************************************** */
 
 #include "../includes/Irc.hpp"
-void extractNickname(std::vector<std::string> incoming)
+
+void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    std::cout << " => Client's nickname is : " << "\"" << incoming[1] << "\"" << std::endl;
+    clients[fd].setNickname(incoming[1]);
+    std::cout << " => Client's nickname is set as : " << clients[fd].getNickname() << std::endl;
 }
 
-void extractUsername(std::vector<std::string> incoming)
+void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    std::cout << " => Client's username is : " << "\"" << incoming[1] << "\"" << std::endl;
+    clients[fd].setUsername(incoming[1]);
+    std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
-void extractPassword(std::vector<std::string> incoming)
+void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    std::cout << " => Client's password is : " << "\"" << incoming[1] << "\"" << std::endl;
+    std::cout << " => Here is where authentication operation will happen." << std::endl;
 }
 
-void    checkOrder(std::vector<std::string> message)
+void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
     size_t i;
@@ -42,17 +45,17 @@ void    checkOrder(std::vector<std::string> message)
 
     case 1:
         std::cout << " => NICK command detected";
-        extractNickname(message);
+        extractNickname(message, clients, fd);
         break;
 
     case 2:
         std::cout << " => USER command detected";
-        extractUsername(message);
+        extractUsername(message, clients, fd);
         break;
 
     case 3:
         std::cout << " => PASS command detected";
-        extractPassword(message);
+        extractPassword(message, clients, fd);
         break;
 
     default:
@@ -61,9 +64,9 @@ void    checkOrder(std::vector<std::string> message)
     }
 }
 
-void    parser(std::string message)
+void    parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
 {
+    int clientFd = pfds[i].fd;
     std::vector<std::string>    split = ft_split(message);
-    std::cout << "Msg Recvd From Client: " << "\"" << message << "\"";
-    checkOrder(split);
+    checkOrder(split, clients, clientFd);
 }

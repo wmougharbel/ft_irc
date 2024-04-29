@@ -25,7 +25,6 @@
 
 void    validateInput(std::string port, std::string password);
 std::vector<std::string> ft_split(std::string message);
-void    parser(std::string message);
-
+void    parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 14:59:48 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/29 15:35:42 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void Server::startServer(void)
                 else
                 {
                     size_t index = std::distance(_pfd.begin(), it);
-                    existingClient(_pfd, index, _clients);//orig: exitingClient(_pfd, index)
+                    existingClient(_pfd, index, _clients);
                     break;
                 }
             }
@@ -137,52 +137,6 @@ void Server::newClient(int sock, std::vector<pollfd> &pfds)
     }
 }
 
-//this is the original function.....
-// void Server::existingClient(std::vector<pollfd> &pfds, int i)
-// {
-//     std::string buf;
-//     char tempBuf[1024];
-//     std::string firstMsg;
-
-//     while (true)
-//     {
-//         int readBytes = read(pfds[i].fd, tempBuf, sizeof(tempBuf));
-//         if (readBytes < 0)
-//         {
-//             if (errno == EAGAIN || errno == EWOULDBLOCK)
-//                 break;
-//             else
-//                 throw std::runtime_error("Error : reading data from client!");
-//         }
-//         else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
-//         {
-//             if (close(pfds[i].fd) == -1)
-//                 throw std::runtime_error("Error : closing client socket!");
-//             printMessage(CLIENT_LEFT, pfds[i].fd);
-
-//             for (std::map<int, Client>::iterator it = _clients.begin(); it != _clients.end();)
-//             {
-//                 if (it->first == pfds[i].fd)
-//                     it = _clients.erase(it);
-//                 else
-//                     ++it;
-//             }
-//             pfds.erase(pfds.begin() + i);
-//             return ;
-//         }
-//         else
-//         {
-//             char *end = strstr(tempBuf, "\r\n");
-//             buf.append(tempBuf, end - tempBuf);
-//             // _messages.push_back(buf);
-//             //parser here
-//             parser(buf);
-//             buf.clear();
-//         }
-//     }
-// }
-
-//this is the modified funciton
 void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients)
 {
     std::string buf;
@@ -206,7 +160,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
     {
         char *end = strstr(tempBuf, "\r\n");
         buf.append(tempBuf, end - tempBuf);
-        parser(buf);
+        parser(buf, clients, i, pfds);
         buf.clear();
     }
 }
