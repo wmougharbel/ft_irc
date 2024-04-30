@@ -6,7 +6,7 @@
 /*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 17:50:05 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/04/30 13:09:37 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,33 +40,32 @@ class Client;
 class Server
 {
     private:
-        std::string _servIP;
-        std::string _port;
-        std::string _password;
-        int _socket;
-        std::vector<pollfd> _pfd;
-        std::vector<std::string> _messages;
-        std::map<int, Client> _clients;
-        // std::vector<Channel *> _channList;
-        void _initializeSocket(void);
-        void _makeSocketNonBlocking(int sock);
-        void _bindListenOnSocket(int sock, struct sockaddr_in addr);
-        struct sockaddr_in _createSocketAddress(const std::string& ip, const std::string& port);
+        std::string                 _servIP;
+        std::string                 _port;
+        std::string                 _password;
+        int                         _socket;
+        std::vector<pollfd>         _pfd;
+        std::vector<std::string>    _messages;
+        std::map<int, Client>       _clients;
+        // std::vector<Channel *>      _channList;
+        void                        _initializeSocket(void);
+        void                        _makeSocketNonBlocking(int sock);
+        void                        _bindListenOnSocket(int sock, struct sockaddr_in addr);
+        struct sockaddr_in          _createSocketAddress(const std::string& ip, const std::string& port);
 
     public:
         Server(const std::string &port, const std::string &password);
         ~Server();
-        void startServer(void);
         std::string getPassword(void) const;
-        void newClient(int sock, std::vector<pollfd> &pfds);
-        void existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);
-        bool didClientAuthenticate(std::string &pass);
-        void displayTime(void);
-        void setClientInfo(int key);
-        void printMessage(const std::string& message, int fd);
-        void closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
-        void    parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
-        //Channel* makeChannel(const std::string &name);
+        void        startServer(void);
+        void        newClient(int sock, std::vector<pollfd> &pfds);
+        void        existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);
+        bool        didClientAuthenticate(std::string &pass);
+        void        displayTime(void);
+        void        setClientInfo(int key);
+        void        printMessage(const std::string& message, int fd);
+        void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
+        void        parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
 };
 
 #endif
