@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/28 21:52:19 by marvin            #+#    #+#             */
-/*   Updated: 2024/04/28 21:52:19 by marvin           ###   ########.fr       */
+/*   Created: 2024/05/02 10:15:16 by walid             #+#    #+#             */
+/*   Updated: 2024/05/02 10:15:16 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,16 @@
 
 void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+    if (incoming.size() != 2)
+    {
+        std::cerr << "Error, Nickname should contain two parameters" << std::endl;
+        return ;
+    }
+    if (incoming[1].empty() || incoming[1] == "Anonymous")
+    {
+        std::cerr << "Error, Nickname cannot be empty" << std::endl;
+        return ;
+    }
     clients[fd].setNickname(incoming[1]);
     std::cout << " => Client's nickname is set as : " << clients[fd].getNickname() << std::endl;
 }
