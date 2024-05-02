@@ -8,6 +8,7 @@ Client::Client(int fd) : _fd(fd)
 	_isAuthenticated = false;
 	_nickname = "Anonymous";
 	_username = "Anonymous";
+	_pass = "";
 }
 // Client::Client(std::string nickname, std::string username)
 // {
@@ -66,6 +67,11 @@ std::string Client::getUsername() const
 // 	return (_clientPassword);
 // }
 
+std::string	Client::getPass() const
+{
+	return (_pass);
+}
+
 int Client::getFd() const
 {
 	return (_fd);
@@ -101,11 +107,16 @@ void    Client::setUsername(std::string username)
 // 	_fd = fd;
 // }
 
-void	Client::promote()
+void	Client::setPass(std::string pass)
 {
-	setOperator(true);
-	std::cout << getUsername() << " has been promoted to operator" << std::endl;
+	_pass = pass;
 }
+
+// void	Client::promote()
+// {
+// 	setOperator(true);
+// 	std::cout << getUsername() << " has been promoted to operator" << std::endl;
+// }
 
 void	Client::authenticate()
 {
@@ -125,12 +136,12 @@ void	Client::kick(const Client &toKick)
 	std::cout << this->getUsername() << " kicked " << toKick.getUsername() << " out of the channel" << std::endl;
 }
 
-void	Client::setServerPassword(std::string password)
-{
-	(void)password;
-	// _server.setPassword(password);
-	// std::cout << "Server password: " << _server.getPassword() << std::endl;
-}
+// void	Client::setServerPassword(std::string password)
+// {
+// 	(void)password;
+// 	// _server.setPassword(password);
+// 	// std::cout << "Server password: " << _server.getPassword() << std::endl;
+// }
 
 void	Client::join(Channel channel)
 {

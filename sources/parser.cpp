@@ -14,6 +14,8 @@
 
 void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+    if (!checkOrder(clients, fd))
+        return ;
     if (incoming.size() != 2)
     {
         std::cerr << "Error, Nickname should contain two parameters" << std::endl;
@@ -30,7 +32,24 @@ void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &
 
 void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+    if (incoming.size() != 5)
+    {
+        std::cerr << "Error, Username should contain four parameters" << std::endl;
+        return ;
+    }
+    if (incoming[1].empty() || incoming[1] == "Anonymous")
+    {
+        std::cerr << "Error, Username cannot be empty" << std::endl;
+        return ;
+    }
+    if (incoming[2] != "0" || incoming[3] != "*")
+    {
+        std::cerr << "Error, invalid parameters" << std::endl;
+        return ;
+    }
     clients[fd].setUsername(incoming[1]);
+    if (!checkOrder(clients, fd))
+        return  (clients[fd].setUsername("Anonymous"));
     std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
@@ -38,6 +57,7 @@ void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &
 {
     if (serverPass == incoming[1])
     {
+        clients[fd].setPass(incoming[1]);
         clients[fd].setAuthStatus(true);
         std::cout << " => client at fd : " << fd << " authenticated and their auth status is set to : " << clients[fd].getAuthStatus() << std::endl;
     }
@@ -45,7 +65,9 @@ void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &
         std::cout << " => client at fd : " << fd << " could not authenticate" << std::endl;
 }
 
-void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
+
+
+void    getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
     size_t i;
@@ -79,3 +101,4 @@ void    checkOrder(std::vector<std::string> &message, std::map<int, Client> &cli
         break;
     }
 }
+

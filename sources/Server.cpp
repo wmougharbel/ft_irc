@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/04/29 17:54:38 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/05/02 19:09:36 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,7 +245,7 @@ void    Server::parser(std::string &message, std::map<int, Client> &clients, int
     int clientFd = pfds[i].fd;
     std::vector<std::string>    split = ft_split(message);
     std::string servPass = getPassword();
-    checkOrder(split, clients, clientFd, servPass);
+    getCommand(split, clients, clientFd, servPass);
 }
 
 void SignalHandler(int signum)

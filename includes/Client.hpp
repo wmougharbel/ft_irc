@@ -27,6 +27,7 @@ class Client
 		std::vector <Channel> _channels;
 		std::string	_nickname;
 		std::string	_username;
+		std::string	_pass;
 		// std::vector<Channel> _channel;
 
 	public:
@@ -42,6 +43,7 @@ class Client
 		bool		getAuthStatus() const;
 		std::string	getNickname() const;
 		std::string	getUsername()const;
+		std::string	getPass() const;
 		int getFd() const;
 
 		//setters
@@ -49,7 +51,7 @@ class Client
 		void	setAuthStatus(bool status);
 		void	setNickname(std::string nickname);
 		void	setUsername(std::string username);
-		void	setServerPassword(std::string password);
+		void	setPass(std::string pass);
 
 		//functions
 		void	promote();
