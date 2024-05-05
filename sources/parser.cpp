@@ -15,16 +15,16 @@
 void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
     if (!checkOrder(clients, fd))
-        return ;
+        return;
     if (incoming.size() != 2)
     {
         std::cerr << "Error, Nickname should contain two parameters" << std::endl;
-        return ;
+        return;
     }
     if (incoming[1].empty() || incoming[1] == "Anonymous")
     {
         std::cerr << "Error, Nickname cannot be empty" << std::endl;
-        return ;
+        return;
     }
     clients[fd].setNickname(incoming[1]);
     std::cout << " => Client's nickname is set as : " << clients[fd].getNickname() << std::endl;
@@ -35,21 +35,21 @@ void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &
     if (incoming.size() != 5)
     {
         std::cerr << "Error, Username should contain four parameters" << std::endl;
-        return ;
+        return;
     }
     if (incoming[1].empty() || incoming[1] == "Anonymous")
     {
         std::cerr << "Error, Username cannot be empty" << std::endl;
-        return ;
+        return;
     }
     if (incoming[2] != "0" || incoming[3] != "*")
     {
         std::cerr << "Error, invalid parameters" << std::endl;
-        return ;
+        return;
     }
     clients[fd].setUsername(incoming[1]);
     if (!checkOrder(clients, fd))
-        return  (clients[fd].setUsername("Anonymous"));
+        return (clients[fd].setUsername("Anonymous"));
     std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
@@ -65,9 +65,7 @@ void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &
         std::cout << " => client at fd : " << fd << " could not authenticate" << std::endl;
 }
 
-
-
-void    getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
+void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
     size_t i;
@@ -97,8 +95,7 @@ void    getCommand(std::vector<std::string> &message, std::map<int, Client> &cli
         break;
 
     default:
-        std::cout << " => UNKNOWN command" << std::endl;
+        clients[fd].sendMessage(message);
         break;
     }
 }
-

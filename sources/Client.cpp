@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client(){}
+Client::Client() {}
 
 Client::Client(int fd) : _fd(fd)
 {
@@ -40,14 +40,14 @@ Client::Client(int fd) : _fd(fd)
 // 	return (*this);
 // }
 
-Client::~Client(){}
+Client::~Client() {}
 
-bool    Client::getOperator() const
+bool Client::getOperator() const
 {
 	return (_isOperator);
 }
 
-bool	Client::getAuthStatus() const
+bool Client::getAuthStatus() const
 {
 	return (_isAuthenticated);
 }
@@ -67,7 +67,7 @@ std::string Client::getUsername() const
 // 	return (_clientPassword);
 // }
 
-std::string	Client::getPass() const
+std::string Client::getPass() const
 {
 	return (_pass);
 }
@@ -77,22 +77,22 @@ int Client::getFd() const
 	return (_fd);
 }
 
-void    Client::setOperator(bool isOperator)
+void Client::setOperator(bool isOperator)
 {
 	_isOperator = isOperator;
 }
 
-void	Client::setAuthStatus(bool status)
+void Client::setAuthStatus(bool status)
 {
 	_isAuthenticated = status;
 }
 
-void    Client::setNickname(std::string nickname)
+void Client::setNickname(std::string nickname)
 {
 	_nickname = nickname;
 }
 
-void    Client::setUsername(std::string username)
+void Client::setUsername(std::string username)
 {
 	_username = username;
 }
@@ -107,7 +107,7 @@ void    Client::setUsername(std::string username)
 // 	_fd = fd;
 // }
 
-void	Client::setPass(std::string pass)
+void Client::setPass(std::string pass)
 {
 	_pass = pass;
 }
@@ -118,7 +118,7 @@ void	Client::setPass(std::string pass)
 // 	std::cout << getUsername() << " has been promoted to operator" << std::endl;
 // }
 
-void	Client::authenticate()
+void Client::authenticate()
 {
 	// check if the client's entered password matches server's password
 	// if yes change the auth satus to true
@@ -129,10 +129,10 @@ void	Client::authenticate()
 	std::cout << "User authentication successful" << std::endl;
 }
 
-void	Client::kick(const Client &toKick)
+void Client::kick(const Client &toKick)
 {
 	if (this->getOperator() == false)
-		throw (std::runtime_error("Only operators can kick clients out of a channel!"));
+		throw(std::runtime_error("Only operators can kick clients out of a channel!"));
 	std::cout << this->getUsername() << " kicked " << toKick.getUsername() << " out of the channel" << std::endl;
 }
 
@@ -143,13 +143,31 @@ void	Client::kick(const Client &toKick)
 // 	// std::cout << "Server password: " << _server.getPassword() << std::endl;
 // }
 
-void	Client::join(Channel channel)
+void Client::join(Channel channel)
 {
 	if (channel.isMember(_nickname))
 	{
 		std::cerr << _nickname << " is already a member here" << std::endl;
-		return ;
+		return;
 	}
 	_channels.push_back(channel);
 	_channels[_channels.size() - 1].addMember(*this);
+}
+
+void Client::sendMessage(std::vector<std::string> &message) const
+{
+	std::string buffer;
+	size_t messageToSend;
+
+	for (size_t i = 1; i < message.size(); i++)
+		buffer += " " + message[i];
+	buffer += "\r\n";
+	messageToSend = send(_fd, buffer.c_str(), buffer.length(), 0);
+	if (messageToSend < 0)
+	{
+		std::cerr << "Error, could not send message" << std::endl;
+		return;
+	}
+	else
+		std::cout << buffer;
 }

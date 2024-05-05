@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/02 19:09:36 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/05 12:08:37 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,11 @@ void Server::_makeSocketNonBlocking(int sock)
         throw std::runtime_error("Error : Failed to set socket to non-blocking mode!");
 }
 
-struct sockaddr_in Server::_createSocketAddress(const std::string& ip, const std::string& port)
+struct sockaddr_in Server::_createSocketAddress(const std::string &ip, const std::string &port)
 {
     struct sockaddr_in addr;
-    
-    bzero((char*) &addr, sizeof(addr));
+
+    bzero((char *)&addr, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(ip.c_str());
     addr.sin_port = htons(atoi(port.c_str()));
@@ -81,13 +81,13 @@ void Server::_bindListenOnSocket(int sock, struct sockaddr_in addr)
     if (bind(sock, (sockaddr *)&addr, sizeof(addr)) < 0)
         throw std::runtime_error("Error : Failed to bind the server socket!");
 
-    if (listen(sock, SOMAXCONN) < 0) //SOMAXCONN allows the system to choose a value for backlog. I think it's set to 128 max.
+    if (listen(sock, SOMAXCONN) < 0) // SOMAXCONN allows the system to choose a value for backlog. I think it's set to 128 max.
         throw std::runtime_error("Error : Failed to listen on the server socket!");
 }
 
 void Server::startServer(void)
 {
-    while(isRunning == true)
+    while (isRunning == true)
     {
         if (poll(&_pfd[0], _pfd.size(), -1) < 0)
             throw std::runtime_error("Error : Failed to poll on the server socket!");
@@ -118,9 +118,9 @@ std::string Server::getPassword(void) const
 
 void Server::newClient(int sock, std::vector<pollfd> &pfds)
 {
-    int         clientFd;
+    int clientFd;
     sockaddr_in addr = {};
-    socklen_t   size = sizeof(addr);
+    socklen_t size = sizeof(addr);
 
     clientFd = accept(sock, (sockaddr *)&addr, &size);
     if (clientFd == -1)
@@ -170,14 +170,14 @@ void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd>
     int clientFd = pfds[i].fd;
     if (close(clientFd) == -1)
         throw std::runtime_error("Error : closing client socket!");
-    
+
     if (clientFd != -1)
         printMessage(CLIENT_LEFT, clientFd);
 
     std::map<int, Client>::iterator it = clients.find(clientFd);
     if (it != clients.end())
         clients.erase(it);
-    pfds.erase(pfds.begin() + i);   
+    pfds.erase(pfds.begin() + i);
 }
 
 // Channel* Server::makeChannel(const std::string &name)
@@ -200,7 +200,7 @@ void Server::displayTime(void)
 {
     time_t currentTime;
     char dateString[50];
-    
+
     time(&currentTime);
     tm *localTime = localtime(&currentTime);
     strftime(dateString, sizeof(dateString), "%d-%m-%Y (%H:%M:%S) : ", localTime);
@@ -222,12 +222,12 @@ void Server::setClientInfo(int key)
         if (end != std::string::npos)
         {
             std::string username = userMessage.substr(start + 1, end - start - 1);
-            _clients[key].setUsername(username); 
+            _clients[key].setUsername(username);
         }
     }
 }
 
-void Server::printMessage(const std::string& message, int fd)
+void Server::printMessage(const std::string &message, int fd)
 {
     displayTime();
     for (std::vector<pollfd>::iterator it = _pfd.begin() + 1; it != _pfd.end(); ++it)
@@ -240,12 +240,13 @@ void Server::printMessage(const std::string& message, int fd)
     }
 }
 
-void    Server::parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
+void Server::parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
 {
     int clientFd = pfds[i].fd;
-    std::vector<std::string>    split = ft_split(message);
+    std::vector<std::string> split = ft_split(message);
     std::string servPass = getPassword();
     getCommand(split, clients, clientFd, servPass);
+    // clients[fd].sendMessage(message);
 }
 
 void SignalHandler(int signum)
@@ -260,19 +261,19 @@ void SignalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-    
+
     signal(SIGINT, SignalHandler);
     (void)argc;
-    
+
     Server serv(argv[1], argv[2]);
     isRunning = true;
-    
+
     try
     {
         serv.startServer();
         return 0;
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << e.what() << std::endl;
         return 1;
