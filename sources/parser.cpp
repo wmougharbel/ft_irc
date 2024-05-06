@@ -95,7 +95,7 @@ void getCommand(std::vector<std::string> &message, std::map<int, Client> &client
         break;
 
     default:
-        clients[fd].sendMessage(message);
+        clients[fd].sendToChannel(message, fd);
         break;
     }
 }

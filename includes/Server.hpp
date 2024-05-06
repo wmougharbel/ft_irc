@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/04/30 13:09:37 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/05/06 19:49:27 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <err.h>
 # include "../includes/Client.hpp"
 # include "../includes/Irc.hpp"
+# include "../includes/Channel.hpp"
 # include <map>
 
 #define SERVER_IP "127.0.0.1"
@@ -36,6 +37,7 @@
 #define NO_AUTH ", You couldn't authenticate. Get the F out!!"
 
 class Client;
+class Channel;
 
 class Server
 {

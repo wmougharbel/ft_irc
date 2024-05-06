@@ -28,7 +28,6 @@ private:
 	std::string _nickname;
 	std::string _username;
 	std::string _pass;
-	// std::vector<Channel> _channel;
 
 public:
 	Client();
@@ -52,12 +51,14 @@ public:
 	void setNickname(std::string nickname);
 	void setUsername(std::string username);
 	void setPass(std::string pass);
+	void addChannel(const Channel &);
 
 	// functions
 	void authenticate();
 	void join(Channel channel);
 	void kick(const Client &toKick);
 	void sendMessage(std::vector<std::string> &message) const;
+	void sendToChannel(std::vector<std::string> &message, int fd) const;
 };
 
 #endif

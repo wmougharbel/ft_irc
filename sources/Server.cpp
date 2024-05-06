@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/05 12:08:37 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/06 20:35:36 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,11 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
         char *end = strstr(tempBuf, "\r\n");
         buf.append(tempBuf, end - tempBuf);
         parser(buf, clients, i, pfds);
+        // Channel channel("Netflix", clients[4]);
+        // for (size_t i = 4; i < clients.size(); i++)
+        //     channel.addMember(clients[i]);
+        // for (size_t i = 0; i < clients.size(); i++)
+        //     clients[i].addChannel(channel);
         buf.clear();
     }
 }
@@ -246,7 +251,6 @@ void Server::parser(std::string &message, std::map<int, Client> &clients, int i,
     std::vector<std::string> split = ft_split(message);
     std::string servPass = getPassword();
     getCommand(split, clients, clientFd, servPass);
-    // clients[fd].sendMessage(message);
 }
 
 void SignalHandler(int signum)

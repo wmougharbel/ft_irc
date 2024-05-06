@@ -1,4 +1,5 @@
 #include "../includes/Client.hpp"
+#include <unistd.h>
 
 Client::Client() {}
 
@@ -112,6 +113,11 @@ void Client::setPass(std::string pass)
 	_pass = pass;
 }
 
+void	Client::addChannel(const Channel &channel)
+{
+	_channels.push_back(channel);
+}
+
 // void	Client::promote()
 // {
 // 	setOperator(true);
@@ -170,4 +176,16 @@ void Client::sendMessage(std::vector<std::string> &message) const
 	}
 	else
 		std::cout << buffer;
+}
+
+void	Client::sendToChannel(std::vector<std::string> &message, int fd) const
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		for (size_t j = 0; j < _channels[i].getMembers().size(); i++)
+		{
+			if (fd != this->_fd)
+				sendMessage(message);
+		}
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/04/28 16:33:16 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/06 19:33:21 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,4 +140,10 @@ bool Channel::isMember(const std::string& nickname) const {
 		}
 	}
 	return false;
+}
+
+
+std::vector<Client> Channel::getMembers() const
+{
+	return (_members);
 }
