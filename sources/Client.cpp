@@ -184,14 +184,16 @@ void Client::sendMessage(std::vector<std::string> &message) const
 
 void	Client::sendToChannel(std::vector<std::string> &message, int fd) const
 {
-	size_t	j;
-	for (size_t i = 0; i < _channels.size(); i++)
+	size_t	j = 0;
+	size_t i = 0;
+	while (i < _channels.size())
 	{
 		j = 0;
-		for (j; j < _channels[j].getMembers().size(); j++)
+		while (j < _channels[i].getMembers().size())
 		{
-			if (fd != this->_fd)
-				sendMessage(message);
+			_channels[i].getMembers()[j].sendMessage(message);
+			j++;
 		}
+		i++;
 	}
 }
