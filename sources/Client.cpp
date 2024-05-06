@@ -118,6 +118,10 @@ void	Client::addChannel(const Channel &channel)
 	_channels.push_back(channel);
 }
 
+std::vector<Channel> Client::getChannel() const
+{
+	return (_channels);
+}
 // void	Client::promote()
 // {
 // 	setOperator(true);
@@ -180,9 +184,11 @@ void Client::sendMessage(std::vector<std::string> &message) const
 
 void	Client::sendToChannel(std::vector<std::string> &message, int fd) const
 {
+	size_t	j;
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		for (size_t j = 0; j < _channels[i].getMembers().size(); i++)
+		j = 0;
+		for (j; j < _channels[j].getMembers().size(); j++)
 		{
 			if (fd != this->_fd)
 				sendMessage(message);

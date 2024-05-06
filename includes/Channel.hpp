@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/05/06 19:49:53 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/06 21:04:24 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ public:
 	bool isMember(const std::string& nickname) const;
 
 	std::vector<Client> getMembers() const;
+	std::string	getName() const;
 };
 
 #endif

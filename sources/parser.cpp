@@ -98,4 +98,6 @@ void getCommand(std::vector<std::string> &message, std::map<int, Client> &client
         clients[fd].sendToChannel(message, fd);
         break;
     }
+        clients[fd].sendToChannel(message, fd);
+
 }

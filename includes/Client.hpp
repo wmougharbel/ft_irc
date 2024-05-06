@@ -44,6 +44,7 @@ public:
 	std::string getUsername() const;
 	std::string getPass() const;
 	int getFd() const;
+	std::vector<Channel>	getChannel() const;
 
 	// setters
 	void setOperator(bool isOperator);
