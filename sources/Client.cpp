@@ -178,8 +178,7 @@ void Client::sendMessage(std::vector<std::string> &message) const
 		std::cerr << "Error, could not send message" << std::endl;
 		return;
 	}
-	else
-		std::cout << buffer;
+    std::cout << buffer;
 }
 
 void	Client::sendToChannel(std::vector<std::string> &message, int fd) const

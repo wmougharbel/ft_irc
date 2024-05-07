@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/07 12:08:34 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/05/07 21:18:44 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,15 +160,11 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
     {
         char *end = strstr(tempBuf, "\r\n");
         buf.append(tempBuf, end - tempBuf);
-        parser(buf, clients, i, pfds);
-        // std::cout << "Nick: " << clients[0].getNickname() << std::endl;
-        // std::cout << "Nick: " << clients[1].getNickname() << std::endl;
-        // std::cout << "Nick: " << clients[2].getNickname() << std::endl;
-        // std::cout << "Nick: " << clients[3].getNickname() << std::endl;
+        std::cout << buf << std::endl;
         // std::cout << "Nick: " << clients[4].getNickname() << std::endl;
-
-
-        // channel.addMember(clients[0]);
+        // std::cout << "Nick: " << clients[5].getNickname() << std::endl;
+        // parser(buf, clients, i, pfds);
+        // /channel.addMember(clients[0]);
         // for (size_t i = 0; i < clients.size(); i++)
         // if (clients.size() == 6)
         // {
@@ -182,7 +178,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
         // std::cout << clients[4].getChannel()[0].getName() << std::endl;
         // std::cout << clients[5].getChannel()[0].getName() << std::endl; 
         // // clients[0].sendToChannel(buf)
-        //}
+        // }
         buf.clear();
     }
 }
