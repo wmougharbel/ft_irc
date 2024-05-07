@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/06 22:21:03 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/07 12:08:34 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
         // std::cout << clients[4].getChannel()[0].getName() << std::endl;
         // std::cout << clients[5].getChannel()[0].getName() << std::endl; 
         // // clients[0].sendToChannel(buf)
-        }
+        //}
         buf.clear();
     }
 }
@@ -228,25 +228,6 @@ void Server::displayTime(void)
     strftime(dateString, sizeof(dateString), "%d-%m-%Y (%H:%M:%S) : ", localTime);
 
     std::cout << dateString;
-}
-
-void Server::setClientInfo(int key)
-{
-    std::string nickname = _messages[1].substr(5);
-    _clients[key].setNickname(nickname);
-
-    std::string userMessage = _messages[2];
-    size_t start = userMessage.find(' ');
-    if (start != std::string::npos)
-    {
-        size_t end = userMessage.find(' ', start + 1);
-        std::string username = userMessage.substr(start + 1);
-        if (end != std::string::npos)
-        {
-            std::string username = userMessage.substr(start + 1, end - start - 1);
-            _clients[key].setUsername(username);
-        }
-    }
 }
 
 void Server::printMessage(const std::string &message, int fd)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/05/06 19:49:27 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/07 12:08:41 by loandrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ class Server
         void        existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);
         bool        didClientAuthenticate(std::string &pass);
         void        displayTime(void);
-        void        setClientInfo(int key);
         void        printMessage(const std::string& message, int fd);
         void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         void        parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
