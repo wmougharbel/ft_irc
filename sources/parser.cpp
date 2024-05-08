@@ -14,42 +14,42 @@
 
 void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    if (!checkOrder(clients, fd))
-        return;
-    if (incoming.size() != 2)
-    {
-        std::cerr << "Error, Nickname should contain two parameters" << std::endl;
-        return;
-    }
-    if (incoming[1].empty() || incoming[1] == "Anonymous")
-    {
-        std::cerr << "Error, Nickname cannot be empty" << std::endl;
-        return;
-    }
+    //if (!checkOrder(clients, fd))
+    //    return;
+    //if (incoming.size() != 2)
+    //{
+    //   std::cerr << "Error, Nickname should contain two parameters" << std::endl;
+    //    return;
+    //}
+    //if (incoming[1].empty() || incoming[1] == "Anonymous")
+    //{
+    //    std::cerr << "Error, Nickname cannot be empty" << std::endl;
+    //    return;
+    //}
     clients[fd].setNickname(incoming[1]);
     std::cout << " => Client's nickname is set as : " << clients[fd].getNickname() << std::endl;
 }
 
 void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    if (incoming.size() != 5)
-    {
-        std::cerr << "Error, Username should contain four parameters" << std::endl;
-        return;
-    }
-    if (incoming[1].empty() || incoming[1] == "Anonymous")
-    {
-        std::cerr << "Error, Username cannot be empty" << std::endl;
-        return;
-    }
-    if (incoming[2] != "0" || incoming[3] != "*")
-    {
-        std::cerr << "Error, invalid parameters" << std::endl;
-        return;
-    }
+    // if (incoming.size() != 5)
+    // {
+    //     std::cerr << "Error, Username should contain four parameters" << std::endl;
+    //     return;
+    // }
+    // if (incoming[1].empty() || incoming[1] == "Anonymous")
+    // {
+    //     std::cerr << "Error, Username cannot be empty" << std::endl;
+    //     return;
+    // }
+    // if (incoming[2] != "0" || incoming[3] != "*")
+    // {
+    //     std::cerr << "Error, invalid parameters" << std::endl;
+    //     return;
+    // }
     clients[fd].setUsername(incoming[1]);
-    if (!checkOrder(clients, fd))
-        return (clients[fd].setUsername("Anonymous"));
+    // if (!checkOrder(clients, fd))
+    //     return (clients[fd].setUsername("Anonymous"));
     std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
@@ -98,6 +98,6 @@ void getCommand(std::vector<std::string> &message, std::map<int, Client> &client
         clients[fd].sendToChannel(message, fd);
         break;
     }
-        // clients[fd].sendToChannel(message, fd);
+        clients[fd].sendToChannel(message, fd);
 
 }

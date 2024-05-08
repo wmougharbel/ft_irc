@@ -158,28 +158,29 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
     }
     else
     {
-        char *end = strstr(tempBuf, "\r\n");
-        buf.append(tempBuf, end - tempBuf);
-        std::cout << buf << std::endl;
-        // std::cout << "Nick: " << clients[4].getNickname() << std::endl;
-        // std::cout << "Nick: " << clients[5].getNickname() << std::endl;
+        // APPROACH 1
+        // char *end = strstr(tempBuf, "\r\n");
+        // buf.append(tempBuf, end - tempBuf);
+        // std::cout << buf << std::endl;
         // parser(buf, clients, i, pfds);
-        // /channel.addMember(clients[0]);
-        // for (size_t i = 0; i < clients.size(); i++)
-        // if (clients.size() == 6)
+        // buf.clear();
+
+        // APPROACH 2
+        // buf.append(tempBuf, readBytes);
+        // size_t pos = buf.find("\r\n");
+        // while (pos != std::string::npos)
         // {
-        // Channel channel("Netflix", clients[4]);
-        //     clients[4].addChannel(channel);
-        // channel.addMember(clients[5]);
-        //     clients[5].addChannel(channel);
-        // // for (size_t i = 0; i < channel.getMembers().size(); i++)
-        // // std::cout << "Member [" << 0 << "] " << channel.getMembers()[0].getNickname() << std::endl;
-        // // std::cout << "Member [" << 1 << "] " << channel.getMembers()[1].getNickname() << std::endl;
-        // std::cout << clients[4].getChannel()[0].getName() << std::endl;
-        // std::cout << clients[5].getChannel()[0].getName() << std::endl; 
-        // // clients[0].sendToChannel(buf)
+        //     std::string message = buf.substr(0, pos);
+        //     parser(message, clients, i, pfds);
+        //     buf.erase(0, pos + 2); // +2 to remove the "\r\n"
+        //     pos = buf.find("\r\n");
         // }
-        buf.clear();
+
+        // APPROACH 3
+        // std::string message(tempBuf, readBytes);
+        // parser(message, clients, i, pfds);
+        // std::cout << message << std::endl;
+
     }
 }
 
