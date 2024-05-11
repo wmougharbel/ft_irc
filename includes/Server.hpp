@@ -48,7 +48,6 @@ class Server
         std::string                 _password;
         int                         _socket;
         std::vector<pollfd>         _pfd;
-        std::vector<std::string>    _messages;
         std::map<int, Client>       _clients;
         std::vector<Channel>        _channList;
         void                        _initializeSocket(void);
