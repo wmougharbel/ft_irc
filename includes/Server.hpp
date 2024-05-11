@@ -33,8 +33,9 @@
 
 #define SERVER_IP "127.0.0.1"
 #define CLIENT_LEFT " left the server!"
+#define CLIENT_JOINED " joined the server!"
 #define WELCOME ", Welcome to the IRC server. Don't get too comfortable.."
-#define NO_AUTH ", You couldn't authenticate. Get the F out!!"
+#define NO_AUTH ", couldn't authenticate!"
 
 class Client;
 class Channel;
@@ -49,7 +50,7 @@ class Server
         std::vector<pollfd>         _pfd;
         std::vector<std::string>    _messages;
         std::map<int, Client>       _clients;
-        // std::vector<Channel *>      _channList;
+        std::vector<Channel>        _channList;
         void                        _initializeSocket(void);
         void                        _makeSocketNonBlocking(int sock);
         void                        _bindListenOnSocket(int sock, struct sockaddr_in addr);
@@ -67,6 +68,9 @@ class Server
         void        printMessage(const std::string& message, int fd);
         void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         void        parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
+        void        getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass);
+        void        createChannel(std::string &name, int fd, std::map<int, Client> &clients);
+        std::vector<Channel> getChannels(void) const;
 };
 
 #endif

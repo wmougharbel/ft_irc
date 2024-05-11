@@ -166,19 +166,19 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
         // buf.clear();
 
         // APPROACH 2
-        // buf.append(tempBuf, readBytes);
-        // size_t pos = buf.find("\r\n");
-        // while (pos != std::string::npos)
-        // {
-        //     std::string message = buf.substr(0, pos);
-        //     parser(message, clients, i, pfds);
-        //     buf.erase(0, pos + 2); // +2 to remove the "\r\n"
-        //     pos = buf.find("\r\n");
-        // }
+        buf.append(tempBuf, readBytes);
+        size_t pos = buf.find("\r\n");
+        while (pos != std::string::npos)
+        {
+            std::string message = buf.substr(0, pos);
+            parser(message, clients, i, pfds);
+            buf.erase(0, pos + 2); // +2 to remove the "\r\n"
+            pos = buf.find("\r\n");
+        }
 
         // APPROACH 3
         // std::string message(tempBuf, readBytes);
-        // parser(message, clients, i, pfds);
+        //parser(message, clients, i, pfds);
         // std::cout << message << std::endl;
 
     }
@@ -198,14 +198,6 @@ void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd>
         clients.erase(it);
     pfds.erase(pfds.begin() + i);
 }
-
-// Channel* Server::makeChannel(const std::string &name)
-// {
-//     Channel* ch = new Channel(name);
-//     _channList.push_back(ch);
-
-//     return ch;
-// }
 
 bool Server::didClientAuthenticate(std::string &pass)
 {
@@ -234,7 +226,7 @@ void Server::printMessage(const std::string &message, int fd)
     {
         if (it->fd == fd)
         {
-            std::cout << "Client at fd : " << fd << message << std::endl;
+            std::cout << _clients[fd].getNickname() << message << std::endl;
             break;
         }
     }
@@ -248,6 +240,12 @@ void Server::parser(std::string &message, std::map<int, Client> &clients, int i,
     getCommand(split, clients, clientFd, servPass);
 }
 
+void     Server::createChannel(std::string &name, int fd, std::map<int, Client> &clients)
+{
+    Channel chan(name, clients[fd]);
+    _channList.push_back(chan);
+}
+
 void SignalHandler(int signum)
 {
     if (signum == SIGINT)
@@ -256,6 +254,11 @@ void SignalHandler(int signum)
         isRunning = false;
     }
     exit(signum);
+}
+
+std::vector<Channel> Server::getChannels(void) const
+{
+    return _channList;
 }
 
 int main(int argc, char *argv[])

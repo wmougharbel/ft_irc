@@ -14,43 +14,12 @@
 
 void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    //if (!checkOrder(clients, fd))
-    //    return;
-    //if (incoming.size() != 2)
-    //{
-    //   std::cerr << "Error, Nickname should contain two parameters" << std::endl;
-    //    return;
-    //}
-    //if (incoming[1].empty() || incoming[1] == "Anonymous")
-    //{
-    //    std::cerr << "Error, Nickname cannot be empty" << std::endl;
-    //    return;
-    //}
     clients[fd].setNickname(incoming[1]);
-    std::cout << " => Client's nickname is set as : " << clients[fd].getNickname() << std::endl;
 }
 
 void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-    // if (incoming.size() != 5)
-    // {
-    //     std::cerr << "Error, Username should contain four parameters" << std::endl;
-    //     return;
-    // }
-    // if (incoming[1].empty() || incoming[1] == "Anonymous")
-    // {
-    //     std::cerr << "Error, Username cannot be empty" << std::endl;
-    //     return;
-    // }
-    // if (incoming[2] != "0" || incoming[3] != "*")
-    // {
-    //     std::cerr << "Error, invalid parameters" << std::endl;
-    //     return;
-    // }
     clients[fd].setUsername(incoming[1]);
-    // if (!checkOrder(clients, fd))
-    //     return (clients[fd].setUsername("Anonymous"));
-    std::cout << " => Client's username is set as : " << clients[fd].getUsername() << std::endl;
 }
 
 void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass)
@@ -59,45 +28,60 @@ void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &
     {
         clients[fd].setPass(incoming[1]);
         clients[fd].setAuthStatus(true);
-        std::cout << " => client at fd : " << fd << " authenticated and their auth status is set to : " << clients[fd].getAuthStatus() << std::endl;
     }
     else
-        std::cout << " => client at fd : " << fd << " could not authenticate" << std::endl;
+        std::cout << "Client at : " << fd << "couldn't authenticate";
 }
 
-void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
+void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
     std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
+    std::string channel_name;
     size_t i;
+    int auth_status;
+    bool channel_exists = false;
 
     for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
         if (message[0] == commands[i])
             break;
+    
     switch (i)
     {
     case 0:
-        std::cout << " => JOIN command detected" << std::endl;
-        break;
-
+    channel_name = message[1].substr(1, message[1].find(' ') - 1);
+    for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
+    {
+        if (it->getName() == channel_name)
+        {
+            it->addMember(clients[fd]);
+            displayTime();
+            std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
+            channel_exists = true;
+            break;
+        }
+    }
+    if (!channel_exists)
+    {
+        createChannel(channel_name, fd, clients);
+        displayTime();
+        std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
+    }
+    break;
     case 1:
-        std::cout << " => NICK command detected";
         extractNickname(message, clients, fd);
+        displayTime();
+        std::cout << clients[fd].getNickname() << CLIENT_JOINED << std::endl;
         break;
 
     case 2:
-        std::cout << " => USER command detected";
         extractUsername(message, clients, fd);
         break;
 
     case 3:
-        std::cout << " => PASS command detected";
         extractPassword(message, clients, fd, pass);
         break;
 
     default:
-        clients[fd].sendToChannel(message, fd);
         break;
     }
-        clients[fd].sendToChannel(message, fd);
-
 }
