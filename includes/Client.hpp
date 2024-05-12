@@ -22,42 +22,27 @@ class Client
 {
 private:
 	int _fd;
-	bool _isOperator;
-	bool _isAuthenticated;
-	std::vector<Channel> _channels;
+	std::vector<std::string> _channels;
 	std::string _nickname;
 	std::string _username;
-	std::string _pass;
+	std::string	_realName;
 
 public:
-	Client();
 	Client(int fd);
-	// Client (std::string nickname, std::string username);
-	// Client (const Client &);
-	// Client	&operator=(const Client &);
 	~Client();
 
 	// getters
-	bool getOperator() const;
-	bool getAuthStatus() const;
 	std::string getNickname() const;
 	std::string getUsername() const;
-	std::string getPass() const;
 	int getFd() const;
-	std::vector<Channel>	getChannel() const;
+	std::vector<std::string>	getChannel() const;
 
 	// setters
-	void setOperator(bool isOperator);
-	void setAuthStatus(bool status);
-	void setNickname(std::string nickname);
-	void setUsername(std::string username);
-	void setPass(std::string pass);
-	void addChannel(const Channel &);
+	void setNickname(std::string &nickname);
+	void setUsername(std::string &username);
+	void addChannel(std::string &channel);
 
 	// functions
-	void authenticate();
-	void join(Channel channel);
-	void kick(const Client &toKick);
 	void sendMessage(std::vector<std::string> &message) const;
 	void sendToChannel(std::vector<std::string> &message, int fd) const;
 };
