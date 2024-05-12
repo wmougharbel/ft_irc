@@ -30,7 +30,9 @@ void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &
         clients[fd].setAuthStatus(true);
     }
     else
-        std::cout << "Client at : " << fd << "couldn't authenticate";
+    {
+        std::cout << "Client at : " << fd << " couldn't authenticate";
+    }
 }
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)

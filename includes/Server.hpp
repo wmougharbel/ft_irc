@@ -13,29 +13,9 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include <iostream>
-# include <vector>
-# include <stdexcept>
-# include <unistd.h>
-# include <poll.h>
-# include <netinet/in.h>
-# include <fcntl.h>
-# include <arpa/inet.h>
-# include <signal.h>
-# include <cstring>
-# include <stdlib.h>
-# include <algorithm>
-# include <err.h>
 # include "../includes/Client.hpp"
 # include "../includes/Irc.hpp"
 # include "../includes/Channel.hpp"
-# include <map>
-
-#define SERVER_IP "127.0.0.1"
-#define CLIENT_LEFT " left the server!"
-#define CLIENT_JOINED " joined the server!"
-#define WELCOME ", Welcome to the IRC server. Don't get too comfortable.."
-#define NO_AUTH ", couldn't authenticate!"
 
 class Client;
 class Channel;
@@ -62,7 +42,6 @@ class Server
         void        startServer(void);
         void        newClient(int sock, std::vector<pollfd> &pfds);
         void        existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Client> &clients);
-        bool        didClientAuthenticate(std::string &pass);
         void        displayTime(void);
         void        printMessage(const std::string& message, int fd);
         void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);

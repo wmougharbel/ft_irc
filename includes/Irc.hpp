@@ -13,15 +13,32 @@
 #ifndef Irc_H
 # define Irc_H
 
-# include <iostream>
 # include <string>
-# include <stdexcept>
 # include <stdbool.h>
+# include <sstream>
+# include <iostream>
+# include <vector>
+# include <stdexcept>
+# include <unistd.h>
+# include <poll.h>
+# include <netinet/in.h>
+# include <fcntl.h>
+# include <arpa/inet.h>
+# include <signal.h>
+# include <cstring>
+# include <stdlib.h>
+# include <algorithm>
+# include <err.h>
+# include <map>
 # include "Client.hpp"
 # include "Server.hpp"
 # include "Channel.hpp"
-# include <map>
-# include <sstream>
+
+#define SERVER_IP "127.0.0.1"
+#define CLIENT_LEFT " left the server!"
+#define CLIENT_JOINED " joined the server!"
+#define WELCOME ", Welcome to the IRC server. Don't get too comfortable.."
+#define NO_AUTH ", couldn't authenticate!"
 
 void    validateInput(std::string port, std::string password);
 std::vector<std::string> ft_split(std::string message);

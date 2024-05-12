@@ -199,14 +199,6 @@ void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd>
     pfds.erase(pfds.begin() + i);
 }
 
-bool Server::didClientAuthenticate(std::string &pass)
-{
-    if (pass == getPassword())
-        return true;
-    else
-        return false;
-}
-
 void Server::displayTime(void)
 {
     time_t currentTime;
