@@ -11,8 +11,7 @@ SRC_DIR = sources/
 SOURCES = $(addprefix $(SRC_DIR),   validateInput.cpp \
 									Client.cpp \
 									Server.cpp \
-									Channel.cpp \
-									parser.cpp)
+									Channel.cpp)
 
 OBJECTS = $(addsuffix .o, $(basename $(SOURCES)))
 

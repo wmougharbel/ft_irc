@@ -22,12 +22,14 @@ class Client
 {
 private:
 	int _fd;
+	bool	_isAuthenticated;
 	std::vector<std::string> _channels;
 	std::string _nickname;
 	std::string _username;
 	std::string	_realName;
 
 public:
+	Client();
 	Client(int fd);
 	~Client();
 
@@ -36,11 +38,13 @@ public:
 	std::string getUsername() const;
 	int getFd() const;
 	std::vector<std::string>	getChannel() const;
+	bool	getAuthStatus();
 
 	// setters
 	void setNickname(std::string &nickname);
 	void setUsername(std::string &username);
 	void addChannel(std::string &channel);
+	void	setAuthStatus(bool	status);
 
 	// functions
 	void sendMessage(std::vector<std::string> &message) const;

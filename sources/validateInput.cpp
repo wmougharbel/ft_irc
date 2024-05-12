@@ -54,18 +54,3 @@ std::vector<std::string> ft_split(std::string message)
         split.push_back(token);
     return (split);
 }
-
-bool    checkOrder(std::map<int, Client> &clients, int fd)
-{
-    if (clients[fd].getPass().empty())
-    {
-        std::cerr << "Error, User is not authenticated" << std::endl;
-        return (false);
-    }
-    if (clients[fd].getAuthStatus() && clients[fd].getNickname() == "Anonymous" && clients[fd].getUsername() != "Anonymous")
-    {
-        std::cerr << "Error, User nickname is not set" << std::endl;
-        return (false);
-    }
-    return (true);
-}

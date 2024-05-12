@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/05/12 18:32:04 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/12 20:27:41 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ public:
 	bool isPassword() const;
 	bool checkChannelKey(const std::string& key) const;
 
-wd removeOperatorPrivileges(const std::string &member);
+    void setOperatorPrivileges(const Client& member);
+    void removeOperatorPrivileges(const std::string &member);
 	bool hasOperatorPrivileges(const std::string &member) const;
 
 	void addMember(const Client &member);

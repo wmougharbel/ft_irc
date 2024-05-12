@@ -5,6 +5,7 @@ Client::Client() {}
 
 Client::Client(int fd) : _fd(fd)
 {
+    _isAuthenticated = false;
 	_nickname = "Anonymous";
 	_username = "Anonymous";
 }
@@ -44,6 +45,16 @@ void	Client::addChannel(std::string &channel)
 std::vector<std::string> Client::getChannel() const
 {
 	return (_channels);
+}
+
+bool    Client::getAuthStatus()
+{
+    return (_isAuthenticated);
+}
+
+void    Client::setAuthStatus(bool status)
+{
+    _isAuthenticated = status;
 }
 
 // void Client::sendMessage(std::vector<std::string> &message) const

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: loandrad <loandrad@student.42wolfsburg.    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/05/07 12:08:41 by loandrad         ###   ########.fr       */
+/*   Updated: 2024/05/12 20:26:34 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,15 @@ class Server
         void        printMessage(const std::string& message, int fd);
         void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         void        parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
-        void        getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass);
         void        createChannel(std::string &name, int fd, std::map<int, Client> &clients);
         std::vector<Channel> getChannels(void) const;
+
+        //parser
+        void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd);
+        void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd);
+        void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds);
+        void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds);
+        
 };
 
 #endif
