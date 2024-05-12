@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/12 20:57:19 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/12 23:30:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,55 @@ void Server::extractUsername(std::vector<std::string> &incoming, std::map<int, C
 	clients[fd].setUsername(incoming[1]);
 }
 
+void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+{
+	std::string target = message[1].substr(1, message[1].length() - 1);
+	std::vector<std::string> text;
+	std::map<int, Client>::iterator it = clients.begin();
+	
+	for (size_t i = 1; i < message.size(); i++)
+		text.push_back(message[i]);
+	while (it != clients.end())
+	{
+		if (it->second.getNickname() == target)
+			clients[fd].sendMessage(text, it->first);
+		it++;
+	}
+}
+
+void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+{
+	std::string target = message[1].substr(1, message[1].length() - 1);
+	std::vector<std::string> text;
+	
+	std::cout << target << std::endl;
+	for (size_t i = 1; i < message.size(); i++)
+		text.push_back(message[i]);
+	for (size_t i = 0; i < _channList.size(); i++)
+	{
+		if (_channList[i].getName() == target)
+		{
+			for (size_t j = 0; j < _channList[i].getMembers().size(); j++)
+			{
+				clients[fd].sendMessage(text, _channList[i].getMembers()[j].getFd());
+			}
+		}
+	}
+}
+
+void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+{
+	if (message[1][0] == '#')
+	{
+		sendMessageToChannel(message, clients, fd);
+	}
+	else if (message[1][0] == '@')
+	{
+		sendMessageToUser(message, clients, fd);
+	}
+}
+
+
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
 	if (serverPass == incoming[1])
@@ -289,9 +338,11 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 	}
 }
 
+
+
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
@@ -303,44 +354,50 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 	
 	switch (i)
 	{
-	case 0:
-	channel_name = message[1].substr(1, message[1].find(' ') - 1);
-	for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
-	{
-		if (it->getName() == channel_name)
-		{
-			it->addMember(clients[fd]);
+		case 0:
+			channel_name = message[1].substr(1, message[1].find(' ') - 1);
+			for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
+			{
+				if (it->getName() == channel_name)
+				{
+					it->addMember(clients[fd]);
+					displayTime();
+					std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
+					channel_exists = true;
+					break;
+				}
+			}
+			if (!channel_exists)
+			{
+				createChannel(channel_name, fd, clients);
+				displayTime();
+				std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
+			}
+			break;
+		
+		case 1:
+			extractNickname(message, clients, fd);
 			displayTime();
-			std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
-			channel_exists = true;
+			if (clients[fd].getAuthStatus())
+				std::cout << clients[fd].getNickname() << CLIENT_JOINED << std::endl;
+			break;
+
+		case 2:
+			extractUsername(message, clients, fd);
+			break;
+
+		case 3:
+			extractPassword(message, clients, fd, pass, pfds);
+			break;
+
+		case 4:
+			std::cout << "MESSAGE DETECTED" << std::endl;
+			privMsg(message, clients, fd);
+			break ;
+		
+		default:
 			break;
 		}
-	}
-	if (!channel_exists)
-	{
-		createChannel(channel_name, fd, clients);
-		displayTime();
-		std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
-	}
-	break;
-	case 1:
-		extractNickname(message, clients, fd);
-		displayTime();
-		if (clients[fd].getAuthStatus())
-			std::cout << clients[fd].getNickname() << CLIENT_JOINED << std::endl;
-		break;
-
-	case 2:
-		extractUsername(message, clients, fd);
-		break;
-
-	case 3:
-		extractPassword(message, clients, fd, pass, pfds);
-		break;
-
-	default:
-		break;
-	}
 }
 
 int main(int argc, char *argv[])

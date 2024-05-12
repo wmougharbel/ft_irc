@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/05/12 20:26:34 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/12 22:55:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,9 @@ class Server
         void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd);
         void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds);
         void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds);
+        void sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
+        void sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
+        void privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         
 };
 

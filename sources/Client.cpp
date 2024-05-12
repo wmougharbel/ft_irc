@@ -57,22 +57,22 @@ void    Client::setAuthStatus(bool status)
     _isAuthenticated = status;
 }
 
-// void Client::sendMessage(std::vector<std::string> &message) const
-// {
-// 	std::string buffer;
-// 	size_t messageToSend;
+void Client::sendMessage(std::vector<std::string> &message, int fd) const
+{
+	std::string buffer;
+	size_t messageToSend;
 
-// 	for (size_t i = 1; i < message.size(); i++)
-// 		buffer += " " + message[i];
-// 	buffer += "\r\n";
-// 	messageToSend = send(_fd, buffer.c_str(), buffer.length(), 0);
-// 	if (messageToSend < 0)
-// 	{
-// 		std::cerr << "Error, could not send message" << std::endl;
-// 		return;
-// 	}
-//     std::cout << buffer;
-// }
+	for (size_t i = 1; i < message.size(); i++)
+		buffer += " " + message[i];
+	buffer += "\r\n";
+	messageToSend = send(fd, buffer.c_str(), buffer.length(), 0);
+	if (messageToSend < 0)
+	{
+		std::cerr << "Error, could not send message" << std::endl;
+		return;
+	}
+    std::cout << buffer;
+}
 
 //not sure about this one
 // void	Client::sendToChannel(std::vector<std::string> &message, int fd) const

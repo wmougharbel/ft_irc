@@ -47,8 +47,8 @@ public:
 	void	setAuthStatus(bool	status);
 
 	// functions
-	void sendMessage(std::vector<std::string> &message) const;
-	void sendToChannel(std::vector<std::string> &message, int fd) const;
+	void sendMessage(std::vector<std::string> &message, int fd) const;
+	// void sendToChannel(std::vector<std::string> &message, int fd) const;
 };
 
 #endif
