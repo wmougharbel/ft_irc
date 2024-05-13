@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:40:04 by walid             #+#    #+#             */
-/*   Updated: 2024/05/12 22:55:19 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 11:20:16 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Server
         void sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
+        void kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         
 };
 

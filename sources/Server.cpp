@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 10:30:58 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/13 11:22:19 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,6 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 		if (it->second.getNickname() == target)
 		{
 			clients[fd].sendMessage(text, it->first);
-			return ;
 		}
 		it++;
 	}
@@ -309,7 +308,6 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 				if (fd != _channList[i].getMembers()[j].getFd())
 				{
 					clients[fd].sendMessage(text, _channList[i].getMembers()[j].getFd());
-					return ;
 				}
 			}
 		}
@@ -333,6 +331,31 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 	}
 }
 
+// void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+// {
+// 	for (size_t	i = 0; i < _channList.size(); i++)
+// 	{
+// 		if (message[1] == _channList[i].getName())
+// 		{
+// 		std::cout << 2 << std::endl;
+// 			for (size_t j = 0; j < _channList[i].getOperators().size(); j++)
+// 			{
+// 				std::cout << 3 << std::endl;
+// 				if (_channList[i].getOperators()[j].getNickname() == clients[fd].getNickname())
+// 				{
+// 					std::cout << 4 << std::endl;
+// 					if (_channList[i].isMember(message[2]))
+// 					{
+// 						std::cout << 5 << std::endl;
+// 						_channList[i].removeMember(message[2]);
+// 						std::cout << message[2] << " was kicked out of " << _channList[i].getName() << std::endl;
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
 	if (serverPass == incoming[1])
@@ -351,7 +374,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
@@ -403,6 +426,11 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			privMsg(message, clients, fd);
 			break ;
 		
+		case 5:
+			// std::cout << message[1] << std::endl;
+			// kick(message, clients, fd);
+			break ;
+
 		default:
 			break;
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/05/06 21:04:22 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 10:48:33 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,4 +150,9 @@ bool Channel::isMember(const std::string& nickname) const {
 std::vector<Client> Channel::getMembers() const
 {
 	return (_members);
+}
+
+std::vector<Client> Channel::getOperators() const
+{
+	return (_operators);
 }

@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:44:35 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 09:56:36 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/13 10:48:41 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ public:
 	bool isMember(const std::string& nickname) const;
 
 	std::vector<Client> getMembers() const;
+	std::vector<Client> getOperators() const;
+
 	std::string	getName() const;
 };
 
