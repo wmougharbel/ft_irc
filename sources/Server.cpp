@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/12 23:30:46 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 09:41:50 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,16 +294,16 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
 	
-	std::cout << target << std::endl;
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
 	for (size_t i = 0; i < _channList.size(); i++)
 	{
-		if (_channList[i].getName() == target)
+		if (_channList[i].getName() == target && _channList[i].isMember(clients[fd].getNickname()))
 		{
 			for (size_t j = 0; j < _channList[i].getMembers().size(); j++)
 			{
-				clients[fd].sendMessage(text, _channList[i].getMembers()[j].getFd());
+				if (fd != _channList[i].getMembers()[j].getFd())
+					clients[fd].sendMessage(text, _channList[i].getMembers()[j].getFd());
 			}
 		}
 	}
@@ -391,7 +391,6 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break;
 
 		case 4:
-			std::cout << "MESSAGE DETECTED" << std::endl;
 			privMsg(message, clients, fd);
 			break ;
 		

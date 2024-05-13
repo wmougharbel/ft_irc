@@ -60,7 +60,7 @@ void    Client::setAuthStatus(bool status)
 void Client::sendMessage(std::vector<std::string> &message, int fd) const
 {
 	std::string buffer;
-	size_t messageToSend;
+	ssize_t messageToSend;
 
 	for (size_t i = 1; i < message.size(); i++)
 		buffer += " " + message[i];
@@ -71,22 +71,4 @@ void Client::sendMessage(std::vector<std::string> &message, int fd) const
 		std::cerr << "Error, could not send message" << std::endl;
 		return;
 	}
-    std::cout << buffer;
 }
-
-//not sure about this one
-// void	Client::sendToChannel(std::vector<std::string> &message, int fd) const
-// {
-// 	size_t	j = 0;
-// 	size_t i = 0;
-// 	while (i < _channels.size())
-// 	{
-// 		j = 0;
-// 		while (j < _channels[i].getMembers().size())
-// 		{
-// 			_channels[i].getMembers()[j].sendMessage(message);
-// 			j++;
-// 		}
-// 		i++;
-//	}
-// }
