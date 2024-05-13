@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 20:35:22 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 21:07:26 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		// char *end = strstr(tempBuf, "\r\n");
 		// buf.append(tempBuf, end - tempBuf);
 		// std::cout << buf << std::endl;
-		// parser(buf, clients, i, pfds);
+		// // parser(buf, clients, i, pfds);
 		// buf.clear();
 
 		// APPROACH 2
@@ -363,6 +363,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 	if (serverPass == incoming[1])
 	{
 		clients[fd].setAuthStatus(true);
+		std::cout << "Client Authenticated" << std::endl;
 	}
 	else
 	{
