@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 09:41:50 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/13 10:30:58 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,9 +284,13 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 	while (it != clients.end())
 	{
 		if (it->second.getNickname() == target)
+		{
 			clients[fd].sendMessage(text, it->first);
+			return ;
+		}
 		it++;
 	}
+	send(fd, "Client not found!\n", 18, 0);
 }
 
 void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
@@ -303,10 +307,14 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 			for (size_t j = 0; j < _channList[i].getMembers().size(); j++)
 			{
 				if (fd != _channList[i].getMembers()[j].getFd())
+				{
 					clients[fd].sendMessage(text, _channList[i].getMembers()[j].getFd());
+					return ;
+				}
 			}
 		}
 	}
+	sendErrorMessage("Channel not found!", fd);
 }
 
 void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
@@ -319,8 +327,11 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 	{
 		sendMessageToUser(message, clients, fd);
 	}
+	else
+	{
+		sendErrorMessage("Please specify target, @ for user, # for channel.", fd);
+	}
 }
-
 
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
@@ -337,8 +348,6 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 		std::cout << "Client at : " << fd << " couldn't authenticate";
 	}
 }
-
-
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
