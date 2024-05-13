@@ -153,7 +153,6 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 	}
 	else if (readBytes == 0 || (pfds[i].revents & POLLHUP) || (pfds[i].revents & POLLERR))
 	{
-		std::cout << "EXISTING CLIENT I: " << i << std::endl;
 		closeAll(clients, i, pfds);
 		return;
 	}
@@ -187,10 +186,6 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 
 void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds)
 {
-		std::cout << "HERE" << std::endl;
-
-	std::cout << "SIZE: " << pfds.size() << std::endl;
-	std::cout << "I: " << i << std::endl;
 	int clientFd = pfds[i].fd;
 	
 	if (close(clientFd) == -1)
@@ -261,7 +256,6 @@ std::vector<Channel> Server::getChannels(void) const
 {
 	return _channList;
 }
-
 
 void Server::extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
@@ -358,17 +352,24 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
+	// size_t i;
+
+	// for (std::vector<pollfd>::iterator p_it = pfds.begin() + 1; p_it != pfds.end(); ++p_it)
+	// {
+	// 	if (p_it->fd == fd)
+	// 	{
+	// 		i = std::distance(pfds.begin(), p_it);
+	// 		break;
+	// 	}
+	// }
+	
 	if (serverPass == incoming[1])
 	{
 		clients[fd].setAuthStatus(true);
 	}
 	else
 	{
-		std::map<int, Client>::iterator it = clients.find(fd);
-		if (it != clients.end())
-			clients.erase(it);
-		pfds.erase(pfds.begin() + 1);
-		std::cout << "Client at : " << fd << " couldn't authenticate";
+		send(fd, "Password Incorrect\n", 20, 0);
 	}
 }
 
@@ -387,35 +388,43 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 	switch (i)
 	{
 		case 0:
-			channel_name = message[1].substr(1, message[1].find(' ') - 1);
-			for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
+			if (clients[fd].getAuthStatus())
 			{
-				if (it->getName() == channel_name)
+				channel_name = message[1].substr(1, message[1].find(' ') - 1);
+				for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
 				{
-					it->addMember(clients[fd]);
-					displayTime();
-					std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
-					channel_exists = true;
-					break;
+					if (it->getName() == channel_name)
+					{
+						it->addMember(clients[fd]);
+						displayTime();
+						std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
+						channel_exists = true;
+						break;
+					}
 				}
-			}
-			if (!channel_exists)
-			{
-				createChannel(channel_name, fd, clients);
-				displayTime();
-				std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
+				if (!channel_exists)
+				{
+					createChannel(channel_name, fd, clients);
+					displayTime();
+					std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
+				}
 			}
 			break;
 		
 		case 1:
-			extractNickname(message, clients, fd);
-			displayTime();
 			if (clients[fd].getAuthStatus())
+			{
+				extractNickname(message, clients, fd);
+				displayTime();
 				std::cout << clients[fd].getNickname() << CLIENT_JOINED << std::endl;
+			}
 			break;
 
 		case 2:
-			extractUsername(message, clients, fd);
+			if (clients[fd].getAuthStatus())
+			{
+				extractUsername(message, clients, fd);
+			}
 			break;
 
 		case 3:
@@ -423,7 +432,10 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break;
 
 		case 4:
-			privMsg(message, clients, fd);
+			if (clients[fd].getAuthStatus())
+			{
+				privMsg(message, clients, fd);
+			}
 			break ;
 		
 		case 5:
