@@ -61,3 +61,10 @@ void sendErrorMessage(std::string message, int fd)
     if (send(fd, message.c_str(), message.length(), 0) < 0)
         return ;
 }
+
+std::string capitalize(std::string command)
+{
+    for (size_t i = 0; i < command.length(); i++)
+        toupper(command[i]);
+    return (command);
+}

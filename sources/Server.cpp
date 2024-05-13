@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 11:22:19 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/13 20:35:22 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,7 +289,6 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 		}
 		it++;
 	}
-	send(fd, "Client not found!\n", 18, 0);
 }
 
 void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
@@ -312,7 +311,6 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 			}
 		}
 	}
-	sendErrorMessage("Channel not found!", fd);
 }
 
 void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
@@ -331,30 +329,29 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 	}
 }
 
-// void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
-// {
-// 	for (size_t	i = 0; i < _channList.size(); i++)
-// 	{
-// 		if (message[1] == _channList[i].getName())
-// 		{
-// 		std::cout << 2 << std::endl;
-// 			for (size_t j = 0; j < _channList[i].getOperators().size(); j++)
-// 			{
-// 				std::cout << 3 << std::endl;
-// 				if (_channList[i].getOperators()[j].getNickname() == clients[fd].getNickname())
-// 				{
-// 					std::cout << 4 << std::endl;
-// 					if (_channList[i].isMember(message[2]))
-// 					{
-// 						std::cout << 5 << std::endl;
-// 						_channList[i].removeMember(message[2]);
-// 						std::cout << message[2] << " was kicked out of " << _channList[i].getName() << std::endl;
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// }
+void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+{
+	std::string	target = message[3].substr(1, message[3].length() - 1);
+	std::string channel = message[2].substr(1, message[2].length() - 1);
+
+	for (size_t	i = 0; i < _channList.size(); i++)
+	{
+		if (channel == _channList[i].getName())
+		{
+			for (size_t j = 0; j < _channList[i].getOperators().size(); j++)
+			{
+				if (_channList[i].getOperators()[j].getNickname() == clients[fd].getNickname())
+				{
+					if (_channList[i].isMember(target))
+					{
+						_channList[i].removeMember(target);
+						std::cout << target << " was kicked out of " << _channList[i].getName() << std::endl;
+					}
+				}
+			}
+		}
+	}
+}
 
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
@@ -381,7 +378,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 	bool channel_exists = false;
 
 	for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
-		if (message[0] == commands[i])
+		if (capitalize(message[0]) == commands[i])
 			break;
 	
 	switch (i)
@@ -427,8 +424,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break ;
 		
 		case 5:
-			// std::cout << message[1] << std::endl;
-			// kick(message, clients, fd);
+			kick(message, clients, fd);
 			break ;
 
 		default:
