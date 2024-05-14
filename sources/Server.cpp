@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 21:07:26 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/14 14:48:00 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,7 +336,7 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 			{
 				if (_channList[i].getOperators()[j].getNickname() == clients[fd].getNickname())
 				{
-					if (_channList[i].isMember(target))
+					if (_channList[i].isMember(target) && !_channList[i].hasOperatorPrivileges(target))
 					{
 						_channList[i].removeMember(target);
 						std::cout << target << " was kicked out of " << _channList[i].getName() << std::endl;
