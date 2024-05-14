@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/14 16:22:54 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/14 16:28:27 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -373,7 +373,8 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 			return ;
 		}
 		_channList[i].addMember(it->second);
-		printInClient("You invited " + target + " to " + channel, fd);
+		printInClient(clients[fd].getNickname() + " invited " + target + " to " + channel, fd);
+		printInClient(clients[fd].getNickname() + " invited " + target + " to " + channel, it->first);
 	}
 }
 
