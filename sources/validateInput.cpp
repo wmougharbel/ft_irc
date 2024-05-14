@@ -55,7 +55,7 @@ std::vector<std::string> ft_split(std::string message)
     return (split);
 }
 
-void sendErrorMessage(std::string message, int fd)
+void printInClient(std::string message, int fd)
 {
     message = message + "\n";
     if (send(fd, message.c_str(), message.length(), 0) < 0)

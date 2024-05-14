@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/14 14:48:00 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/14 16:22:54 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,7 +319,7 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 	}
 	else
 	{
-		sendErrorMessage("Please specify target, @ for user, # for channel.", fd);
+		printInClient("Please specify target, @ for user, # for channel.", fd);
 	}
 }
 
@@ -344,6 +344,36 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 				}
 			}
 		}
+	}
+}
+
+void Server::invite(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+{
+	std::string	target = message[1];
+	std::string channel = message[2].substr(1, message[2].length() - 1);
+	size_t	i = 0;
+	std::map<int, Client>::iterator it = clients.begin();
+	
+	for (i; i < _channList.size(); i++)
+		if (_channList[i].getName() == channel)
+			break ;
+	if (i >= _channList.size())
+	{
+		printInClient("Couldn't invite client, check your channel's name!", fd);
+		return ;
+	}
+	if (_channList[i].isMember(clients[fd].getNickname()) && _channList[i].hasOperatorPrivileges(clients[fd].getNickname()))
+	{
+		for (it; it != clients.end(); it++)
+			if (it->second.getNickname() == target)
+				break;
+		if (it == clients.end())
+		{
+			printInClient("Couldn't invite client, check your client's name", fd);
+			return ;
+		}
+		_channList[i].addMember(it->second);
+		printInClient("You invited " + target + " to " + channel, fd);
 	}
 }
 
@@ -373,7 +403,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
@@ -440,6 +470,10 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			kick(message, clients, fd);
 			break ;
 
+		case 6:
+			invite(message, clients, fd);
+			break;
+		
 		default:
 			break;
 		}
