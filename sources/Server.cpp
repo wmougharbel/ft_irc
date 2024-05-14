@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/14 16:28:27 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/14 17:06:25 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,6 +378,37 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	}
 }
 
+// void Server::leave(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
+// {
+// 	std::string	channel;
+
+// 	if (message.size() != 2)
+// 	{
+// 		printInClient("Error, usage: /LEAVE #<channel>", fd);
+// 		return ;
+// 	}
+// 	channel = message[1].substr(1, message[1].length() - 1);
+	
+// 	for (size_t	i = 0; i < _channList.size(); i++)
+// 	{
+// 		if (_channList[i].getName() == channel)
+// 		{
+// 			if (_channList[i].isMember(clients[fd].getNickname()))
+// 			{
+// 				if (_channList[i].hasOperatorPrivileges(clients[fd].getNickname()) && (_channList[i].getMembers().size() > 1))
+// 				{
+// 					int nextFd = fd + 1;
+// 					while (!_channList[i].isMember(clients[nextFd].getNickname()))
+// 						nextFd++;
+// 					_channList[i].setOperatorPrivileges(clients[nextFd]);
+// 				}
+// 				_channList[i].removeMember(clients[fd].getNickname());
+// 				printInClient(clients[fd].getNickname() + " left " + channel, fd);
+// 			}
+// 		}
+// 	}
+// }
+
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
 	// size_t i;
@@ -404,7 +435,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "LEAVEs"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
@@ -475,6 +506,9 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			invite(message, clients, fd);
 			break;
 		
+		// case 7:
+		// 	leave(message, clients, fd);
+
 		default:
 			break;
 		}
