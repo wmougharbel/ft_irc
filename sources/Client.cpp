@@ -61,9 +61,11 @@ void Client::sendMessage(std::vector<std::string> &message, int fd) const
 {
 	std::string buffer;
 	ssize_t messageToSend;
-
-	for (size_t i = 1; i < message.size(); i++)
-		buffer += " " + message[i];
+	buffer = ":" + getNickname() + " PRIVMSG ";				
+	for (size_t i = 0; i < message.size(); i++)
+	{
+		buffer += message[i] + " ";
+	}
 	buffer += "\r\n";
 	messageToSend = send(fd, buffer.c_str(), buffer.length(), 0);
 	if (messageToSend < 0)

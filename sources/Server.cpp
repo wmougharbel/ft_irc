@@ -289,7 +289,6 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 {
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
-	
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
 	for (size_t i = 0; i < _channList.size(); i++)
@@ -418,21 +417,9 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
 {
-	// size_t i;
-
-	// for (std::vector<pollfd>::iterator p_it = pfds.begin() + 1; p_it != pfds.end(); ++p_it)
-	// {
-	// 	if (p_it->fd == fd)
-	// 	{
-	// 		i = std::distance(pfds.begin(), p_it);
-	// 		break;
-	// 	}
-	// }
-	
 	if (serverPass == incoming[1])
 	{
 		clients[fd].setAuthStatus(true);
-		std::cout << "Client Authenticated" << std::endl;
 	}
 	else
 	{
@@ -463,6 +450,8 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 					if (it->getName() == channel_name)
 					{
 						it->addMember(clients[fd]);
+						std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
+						send(fd, reply.c_str(), reply.length(), 0);
 						displayTime();
 						std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
 						channel_exists = true;
@@ -472,6 +461,8 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				if (!channel_exists)
 				{
 					createChannel(channel_name, fd, clients);
+					std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
 					displayTime();
 					std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
 				}
