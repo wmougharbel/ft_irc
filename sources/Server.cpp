@@ -6,7 +6,7 @@
 /*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/14 19:42:27 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/16 17:35:41 by walid            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,14 +380,17 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 void Server::leave(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
 	std::string	channel;
+	std::vector<std::string> reason;
 
 	for (size_t	i = 0; i < message.size(); i++)
 		std::cout << message[i] << " " << std::endl;
-	if (message.size() != 3)
+	if (message.size() < 3)
 	{
 		printInClient("Error, usage: /LEAVE #<channel>", fd);
 		return ;
 	}
+	for (size_t i = 2; i < message.size(); i++)
+		reason.push_back(message[i]);
 	channel = message[1].substr(1, message[1].length() - 1);
 	std::cout << -1 << std::endl;
 	for (size_t	i = 0; i < _channList.size(); i++)
@@ -429,7 +432,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "LEAVE"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
