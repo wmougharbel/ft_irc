@@ -448,12 +448,27 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			if (clients[fd].getAuthStatus())
 			{
 				channel_name = message[1].substr(1, message[1].find(' ') - 1);
+				std::string names;
 				for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
 				{
 					if (it->getName() == channel_name)
 					{
 						it->addMember(clients[fd]);
 						std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
+						send(fd, reply.c_str(), reply.length(), 0);
+						for (size_t i = 0; i < it->getMembers().size(); i++)
+						{
+							names += it->getMembers()[i].getNickname();
+							names += " ";
+						}
+						//topic reply
+						reply = ":127.0.0.1 332 " + clients[fd].getNickname() + " #" + channel_name + " Let's talk about Art\r\n";
+						send(fd, reply.c_str(), reply.length(), 0);
+						//names reply
+						reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :" + clients[fd].getNickname() + " " + names + "\r\n";
+						send(fd, reply.c_str(), reply.length(), 0);
+						//end_of_names reply
+						reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
 						send(fd, reply.c_str(), reply.length(), 0);
 						displayTime();
 						std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
@@ -464,8 +479,20 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				if (!channel_exists)
 				{
 					createChannel(channel_name, fd, clients);
+
+					//join reply
 					std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
+					//topic reply
+					reply = ":127.0.0.1 332 " + clients[fd].getNickname() + " #" + channel_name + " Let's talk about Art\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
+					//names reply
+    				reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
+					//end_of_names reply
+    				reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
+
 					displayTime();
 					std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;    
 				}
@@ -478,6 +505,8 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				extractNickname(message, clients, fd);
 				displayTime();
 				std::cout << clients[fd].getNickname() << CLIENT_JOINED << std::endl;
+				std::string reply = clients[fd].getNickname() + ", Welcome to the FT_IRC network!\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
 			}
 			break;
 
