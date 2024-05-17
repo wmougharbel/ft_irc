@@ -39,6 +39,7 @@
 #define CLIENT_JOINED " joined the server!"
 #define WELCOME ", Welcome to the IRC server. Don't get too comfortable.."
 #define NO_AUTH ", couldn't authenticate!"
+#define TO_RUN "To use program : ./ircserv <4-digit PORT> <4-8 CHAR LONG PASSWORD>"
 
 void    validateInput(std::string port, std::string password);
 std::vector<std::string> ft_split(std::string message);

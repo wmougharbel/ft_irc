@@ -518,10 +518,23 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 
 int main(int argc, char *argv[])
 {
+	if (argc != 3)
+	{
+		std::cout << TO_RUN << std::endl;
+		return 1;
+	}
+
+	try
+	{
+		validateInput(argv[1], argv[2]);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return 1;
+	}
 
 	signal(SIGINT, SignalHandler);
-	(void)argc;
-
 	Server serv(argv[1], argv[2]);
 	isRunning = true;
 
