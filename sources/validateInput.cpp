@@ -65,6 +65,6 @@ void printInClient(std::string message, int fd)
 std::string capitalize(std::string command)
 {
     for (size_t i = 0; i < command.length(); i++)
-        toupper(command[i]);
+        command[i] = toupper(command[i]);
     return (command);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/16 17:35:41 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/17 21:25:09 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,11 @@ std::vector<Channel> Server::getChannels(void) const
 
 void Server::extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (incoming[1] == it->second.getNickname())
+			return (printInClient("Error, nickname already exists.", fd));
+	}
 	clients[fd].setNickname(incoming[1]);
 }
 
@@ -308,6 +313,8 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 
 void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
+	if (message.size() < 3)
+		return (printInClient("Usage: /PRIVMSG #<channel> <message>", fd));
 	if (message[1][0] == '#')
 	{
 		sendMessageToChannel(message, clients, fd);
@@ -441,6 +448,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 	for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
 		if (capitalize(message[0]) == commands[i])
 			break;
+	std::cout << capitalize(message[0]) << std::endl;
 	
 	switch (i)
 	{
@@ -487,10 +495,10 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 					reply = ":127.0.0.1 332 " + clients[fd].getNickname() + " #" + channel_name + " Let's talk about Art\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 					//names reply
-    				reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";
+					reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 					//end_of_names reply
-    				reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
+					reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 
 					displayTime();
