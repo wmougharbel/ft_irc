@@ -236,10 +236,11 @@ void Server::parser(std::string &message, std::map<int, Client> &clients, int i,
 	getCommand(split, clients, clientFd, servPass, pfds);
 }
 
-void     Server::createChannel(std::string &name, int fd, std::map<int, Client> &clients)
+Channel     Server::createChannel(std::string &name, int fd, std::map<int, Client> &clients)
 {
 	Channel chan(name, clients[fd]);
 	_channList.push_back(chan);
+	return (chan);
 }
 
 void SignalHandler(int signum)
@@ -458,18 +459,24 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 						send(fd, reply.c_str(), reply.length(), 0);
 						for (size_t i = 0; i < it->getMembers().size(); i++)
 						{
+							for (size_t j = 0; j < it->getOperators().size(); j++)
+							{
+								if (it->getOperators()[j].getNickname() == it->getMembers()[i].getNickname())
+									names += "@";
+							}
 							names += it->getMembers()[i].getNickname();
 							names += " ";
 						}
-						//topic reply
-						reply = ":127.0.0.1 332 " + clients[fd].getNickname() + " #" + channel_name + " Let's talk about Art\r\n";
+						reply = std::string(":") + SERVER_IP + " 332 " + clients[fd].getNickname() + " #" + channel_name + " " + it->getTopic() + "\r\n";
 						send(fd, reply.c_str(), reply.length(), 0);
-						//names reply
-						reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :" + clients[fd].getNickname() + " " + names + "\r\n";
-						send(fd, reply.c_str(), reply.length(), 0);
-						//end_of_names reply
-						reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
-						send(fd, reply.c_str(), reply.length(), 0);
+
+						for (size_t i = 0; i < it->getMembers().size(); i++)
+						{
+							reply = std::string(":") + SERVER_IP + " 353 " + it->getMembers()[i].getNickname() + " = #" + channel_name + " :" + names + "\r\n";
+							send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+							reply = std::string(":") + SERVER_IP + " 366 " + it->getMembers()[i].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
+							send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+						}
 						displayTime();
 						std::cout << clients[fd].getNickname() << " added to " << channel_name << std::endl;
 						channel_exists = true;
@@ -478,19 +485,20 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				}
 				if (!channel_exists)
 				{
-					createChannel(channel_name, fd, clients);
+					Channel chan = createChannel(channel_name, fd, clients);
 
 					//join reply
 					std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 					//topic reply
-					reply = ":127.0.0.1 332 " + clients[fd].getNickname() + " #" + channel_name + " Let's talk about Art\r\n";
+					reply = std::string(":") + SERVER_IP + " 332 " + clients[fd].getNickname() + " #" + channel_name + " " + chan.getTopic() + "\r\n";
+					std::cout << "topic :" << chan.getTopic() << std::endl;
 					send(fd, reply.c_str(), reply.length(), 0);
 					//names reply
-    				reply = ":127.0.0.1 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";
+    				reply = std::string(":") + SERVER_IP + " 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 					//end_of_names reply
-    				reply = ":127.0.0.1 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
+    				reply = std::string(":") + SERVER_IP + " 366 " + clients[fd].getNickname() + " #" + channel_name + " :End of /NAMES list\r\n";
 					send(fd, reply.c_str(), reply.length(), 0);
 
 					displayTime();

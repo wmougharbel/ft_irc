@@ -46,7 +46,7 @@ class Server
         void        printMessage(const std::string& message, int fd);
         void        closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
         void        parser(std::string &message, std::map<int, Client> &clients, int i, std::vector<pollfd> &pfds);
-        void        createChannel(std::string &name, int fd, std::map<int, Client> &clients);
+        Channel        createChannel(std::string &name, int fd, std::map<int, Client> &clients);
         std::vector<Channel> getChannels(void) const;
 
         //parser
