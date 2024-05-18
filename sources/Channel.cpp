@@ -17,7 +17,7 @@ Channel::Channel(const std::string& name, const Client& firstMember) : _name(nam
 	_members.push_back(firstMember);
 	_operators.push_back(firstMember);
 	_topic = "Default Topic";
-	_password = "";
+	_ChannelKey = "";
 }
 
 Channel::~Channel() {}
@@ -65,6 +65,14 @@ bool Channel::isInviteOnly() const {
 	return _isinviteOnly;
 }
 
+bool	Channel::isInvited(const std::string& name)
+{
+	for (std::vector<std::string>::iterator it = invited.begin(); it != invited.end(); ++it) {
+		if (name == *it)
+			return (true);
+	}
+	return (false);
+}
 
 
 void Channel::setChannelKey(const std::string& key) {

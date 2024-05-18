@@ -432,7 +432,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART", "MODE"};
 	std::string channel_name;
 	size_t i;
 	int auth_status;
@@ -540,6 +540,14 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			leave(message, clients, fd);
 			break ;
 
+		case 8:
+			channel_name = message[1].substr(1, message[1].find(' ') - 1);
+			Channel*	channel = findChannel(channel_name);
+			if (!channel)
+				return (sendToClient(buildReply(SERVER, client.getNickname(), 403, "", 0), client));
+			return (channel->mode(modeString, arg, client));
+			mode(message[1],message[2 ] client[fd]);
+			
 		default:
 			break;
 		}
