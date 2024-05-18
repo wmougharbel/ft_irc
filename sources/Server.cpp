@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:30 by walid             #+#    #+#             */
-/*   Updated: 2024/05/18 15:44:21 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/18 22:42:48 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,10 +234,6 @@ void Server::parser(std::string &message, std::map<int, Client> &clients, int i,
 	std::vector<std::string> split = ft_split(message);
 	std::string servPass = getPassword();
 	getCommand(split, clients, clientFd, servPass, pfds);
-    std::cout << "Channels: ";
-    for (size_t i = 0; i < _channList.size(); i++)
-        std::cout << _channList[i].getName() << " ";
-    std::cout << std::endl;
 }
 
 void     Server::createChannel(std::string &name, int fd, std::map<int, Client> &clients)
@@ -298,6 +294,9 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 {
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
+	std::vector<Channel>::iterator it = _channList.begin();
+	std::vector<Client>::iterator	clientIt = it->getMembers().begin();
+	
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
 	for (size_t i = 0; i < _channList.size(); i++)
@@ -337,19 +336,22 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 {
 	std::string	target = message[3].substr(1, message[3].length() - 1);
 	std::string channel = message[2].substr(1, message[2].length() - 1);
+	std::vector<Channel>::iterator it = _channList.begin();
+	std::vector<Client>::iterator clientIt = it->getOperators().begin();
 
-	for (size_t	i = 0; i < _channList.size(); i++)
+	for (it; it != _channList.end(); it++)
 	{
-		if (channel == _channList[i].getName())
+		if (channel == it->getName())
 		{
-			for (size_t j = 0; j < _channList[i].getOperators().size(); j++)
+			for (clientIt; clientIt != it->getOperators().end(); clientIt++)
 			{
-				if (_channList[i].getOperators()[j].getNickname() == clients[fd].getNickname())
+				if (clientIt->getNickname() == clients[fd].getNickname())
 				{
-					if (_channList[i].isMember(target) && !_channList[i].hasOperatorPrivileges(target))
+					if (it->isMember(target) && !it->hasOperatorPrivileges(target))
 					{
-						_channList[i].removeMember(target);
-						std::cout << target << " was kicked out of " << _channList[i].getName() << std::endl;
+						it->removeMember(target);
+						std::cout << target << " was kicked out of " << it->getName() << std::endl;
+						printInClient("You kicked " + target + " out of " + it->getName(), fd);
 					}
 				}
 			}
@@ -361,30 +363,30 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 {
 	std::string	target = message[1];
 	std::string channel = message[2].substr(1, message[2].length() - 1);
-	size_t	i = 0;
-	std::map<int, Client>::iterator it = clients.begin();
-	
-	for (i; i < _channList.size(); i++)
-		if (_channList[i].getName() == channel)
-			break ;
-	if (i >= _channList.size())
+	std::vector<Channel>::iterator	it = _channList.begin();
+	std::map<int, Client>::iterator	clientIt = clients.begin();
+
+	for (it; it != _channList.end(); it++)
+		if (it->getName() == channel)
+			break;
+	if (it == _channList.end())
 	{
 		printInClient("Couldn't invite client, check your channel's name!", fd);
 		return ;
 	}
-	if (_channList[i].isMember(clients[fd].getNickname()) && _channList[i].hasOperatorPrivileges(clients[fd].getNickname()))
+	if (it->isMember(clients[fd].getNickname()) && it->hasOperatorPrivileges(clients[fd].getNickname()))
 	{
-		for (it; it != clients.end(); it++)
-			if (it->second.getNickname() == target)
-				break;
-		if (it == clients.end())
+		for (clientIt; clientIt != clients.end(); clientIt++)
+			if (clientIt->second.getNickname() == target)
+				break ;
+		if (clientIt == clients.end())
 		{
-			printInClient("Couldn't invite client, check your client's name", fd);
+			printInClient("Couldn't invite client, check your client's name!", fd);
 			return ;
 		}
-		_channList[i].addMember(it->second);
+		it->addMember(clientIt->second);
 		printInClient(clients[fd].getNickname() + " invited " + target + " to " + channel, fd);
-		printInClient(clients[fd].getNickname() + " invited " + target + " to " + channel, it->first);
+		printInClient(clients[fd].getNickname() + " invited you " + " to " + channel, clientIt->first);
 	}
 }
 
@@ -392,46 +394,30 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 {
 	std::string	channel;
 	std::vector<std::string> reason;
+	std::vector<Channel>::iterator it = _channList.begin();
 
-	for (size_t	i = 0; i < message.size(); i++)
-		std::cout << message[i] << " " << std::endl;
 	if (message.size() < 3)
 	{
 		printInClient("Error, usage: /LEAVE #<channel>", fd);
 		return ;
 	}
 	for (size_t i = 2; i < message.size(); i++)
-    {
 		reason.push_back(message[i]);
-        // std::cout << "MESSAGE: " << message[i] << std::endl;
-    }
 	channel = message[1].substr(1, message[1].length() - 1);
-	std::cout << -1 << std::endl;
-	for (size_t	i = 0; i < _channList.size(); i++)
+	for (it; it != _channList.end(); it++)
 	{
-		std::cout << 0 << std::endl;
-
-		if (_channList[i].getName() == channel)
+		if (it->getName() == channel)
 		{
-			std::cout << 1 << std::endl;
-			if (_channList[i].isMember(clients[fd].getNickname()))
+			if (it->isMember(clients[fd].getNickname()))
 			{
-				std::cout << 2 << std::endl;
-				// if (_channList[i].hasOperatorPrivileges(clients[fd].getNickname()) && (_channList[i].getMembers().size() > 1))
-				// {
-				// 	std::cout << 3 << std::endl;
-				// 	int nextFd = fd + 1;
-				// 	while (!_channList[i].isMember(clients[nextFd].getNickname()))
-				// 		nextFd++;
-				// 	_channList[i].setOperatorPrivileges(clients[nextFd]);
-				// }
-				// printInClient(clients[fd].getNickname() + " left ", fd);
-				_channList[i].removeMember(clients[fd].getNickname());
-                if (_channList[i].getMembers().size() == 0)
-                {
-                    std::cout << _channList[i].getName() << " is empty now. Deleting..." << std::endl;
-                    _channList.erase(i);
-                }
+				it->removeMember(clients[fd].getNickname());
+				if(it->getMembers().size() == 0)
+				{
+					std::cout << it->getName() << " is empty now. Deleting..." << std::endl;
+					_channList.erase(it);
+					printInClient("Channel was deleted because of you...", fd);
+					return ;
+				}
 			}
 		}
 	}
