@@ -268,6 +268,17 @@ void Server::extractUsername(std::vector<std::string> &incoming, std::map<int, C
 	clients[fd].setUsername(incoming[1]);
 }
 
+Channel*	Server::findChannel(const std::string& name)
+{
+	for (size_t i = 0; i < _channList.size(); i++)
+	{
+		if (name == _channList[i].getName())
+			return (&_channList[i]);
+	}
+	return (NULL);
+}
+
+
 void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
 	std::string target = message[1].substr(1, message[1].length() - 1);

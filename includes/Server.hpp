@@ -60,6 +60,7 @@ class Server
         void kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void invite(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void leave(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
+        Channel* findChannel(const std::string& name);
 };
 
 #endif
