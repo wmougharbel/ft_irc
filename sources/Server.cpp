@@ -175,12 +175,6 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
-
-		// APPROACH 3
-		// std::string message(tempBuf, readBytes);
-		//parser(message, clients, i, pfds);
-		// std::cout << message << std::endl;
-
 	}
 }
 
@@ -278,10 +272,9 @@ Channel*	Server::findChannel(const std::string& name)
 	return (NULL);
 }
 
-
 void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
-	std::string target = message[1].substr(1, message[1].length() - 1);
+	std::string target = message[1];
 	std::vector<std::string> text;
 	std::map<int, Client>::iterator it = clients.begin();
 	
@@ -321,17 +314,9 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
 	if (message[1][0] == '#')
-	{
 		sendMessageToChannel(message, clients, fd);
-	}
-	else if (message[1][0] == '@')
-	{
-		sendMessageToUser(message, clients, fd);
-	}
 	else
-	{
-		printInClient("Please specify target, @ for user, # for channel.", fd);
-	}
+		sendMessageToUser(message, clients, fd);
 }
 
 void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
@@ -446,14 +431,14 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 {
 	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART"};
 	std::string channel_name;
+	std::string receivedCommand = capitalize(message[0]);
 	size_t i;
 	int auth_status;
 	bool channel_exists = false;
-
 	for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
-		if (capitalize(message[0]) == commands[i])
+		if (receivedCommand == commands[i])
 			break;
-	
+
 	switch (i)
 	{
 		case 0:
@@ -543,6 +528,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 		case 4:
 			if (clients[fd].getAuthStatus())
 			{
+				//before calling privMsg, need to check if "nickname" / "channel name" is valid and exists.
 				privMsg(message, clients, fd);
 			}
 			break ;
