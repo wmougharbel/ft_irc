@@ -38,6 +38,11 @@ class Server
     public:
         Server(const std::string &port, const std::string &password);
         ~Server();
+
+        typedef std::vector<pollfd>::iterator pollFdIterator;
+        typedef std::map<int, Client>::iterator clientIterator;
+        typedef std::vector<Channel>::iterator channelIterator;
+        
         std::string getPassword(void) const;
         void        startServer(void);
         void        newClient(int sock, std::vector<pollfd> &pfds);

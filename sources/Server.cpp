@@ -31,12 +31,12 @@ Server::~Server()
 		close(_socket);
 		_socket = -1; // Reset socket to invalid value
 	}
-	for (std::vector<pollfd>::iterator it = _pfd.begin() + 1; it != _pfd.end(); ++it)
+	for (pollFdIterator i = _pfd.begin() + 1; i != _pfd.end(); ++i)
 	{
-		if (it->fd != -1)
+		if (i->fd != -1)
 		{
-			close(it->fd);
-			it->fd = -1;
+			close(i->fd);
+			i->fd = -1;
 		}
 	}
 }
@@ -91,18 +91,18 @@ void Server::startServer(void)
 	{
 		if (poll(&_pfd[0], _pfd.size(), -1) < 0)
 			throw std::runtime_error("Error : Failed to poll on the server socket!");
-		for (std::vector<pollfd>::iterator it = _pfd.begin(); it != _pfd.end(); ++it)
+		for (pollFdIterator i = _pfd.begin(); i != _pfd.end(); ++i)
 		{
-			if ((it->revents & POLLIN) == POLLIN)
+			if ((i->revents & POLLIN) == POLLIN)
 			{
-				if (it->fd == _socket)
+				if (i->fd == _socket)
 				{
 					newClient(_socket, _pfd);
 					break;
 				}
 				else
 				{
-					size_t index = std::distance(_pfd.begin(), it);
+					size_t index = std::distance(_pfd.begin(), i);
 					existingClient(_pfd, index, _clients);
 					break;
 				}
@@ -188,7 +188,7 @@ void Server::closeAll(std::map<int, Client> &clients, int i, std::vector<pollfd>
 	if (clientFd != -1)
 		printMessage(CLIENT_LEFT, clientFd);
 
-	std::map<int, Client>::iterator it = clients.find(clientFd);
+	clientIterator it = clients.find(clientFd);
 	if (it != clients.end())
 	{
 		clients.erase(it);
@@ -212,9 +212,9 @@ void Server::displayTime(void)
 void Server::printMessage(const std::string &message, int fd)
 {
 	displayTime();
-	for (std::vector<pollfd>::iterator it = _pfd.begin() + 1; it != _pfd.end(); ++it)
+	for (pollFdIterator i = _pfd.begin() + 1; i != _pfd.end(); ++i)
 	{
-		if (it->fd == fd)
+		if (i->fd == fd)
 		{
 			std::cout << _clients[fd].getNickname() << message << std::endl;
 			break;
@@ -276,7 +276,7 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 {
 	std::string target = message[1];
 	std::vector<std::string> text;
-	std::map<int, Client>::iterator it = clients.begin();
+	clientIterator it = clients.begin();
 	
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
@@ -348,7 +348,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	std::string	target = message[1];
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	size_t	i = 0;
-	std::map<int, Client>::iterator it = clients.begin();
+	clientIterator it = clients.begin();
 	
 	for (i; i < _channList.size(); i++)
 		if (_channList[i].getName() == channel)
@@ -446,7 +446,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			{
 				channel_name = message[1].substr(1, message[1].find(' ') - 1);
 				std::string names;
-				for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); ++it)
+				for (channelIterator it = _channList.begin(); it != _channList.end(); ++it)
 				{
 					if (it->getName() == channel_name)
 					{
