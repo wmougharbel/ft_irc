@@ -72,7 +72,9 @@ public:
 	std::vector<Client> getOperators() const;
 
 	std::string	getName() const;
-	void printMode(Client &client);
+	void printMode(Client &client, bool broadcast);
+	void mode(const std::vector<std::string> &message, Client &client) {
+
 
 };
 

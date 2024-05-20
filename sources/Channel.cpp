@@ -143,7 +143,7 @@ void Channel::removeMember(const std::string& nickname) {
 		delete this;
 }
 
-bool Channel::isMember(const std::string& nickname) const {
+bool Channel::isMember (const std::string& nickname) const {
 	if(_members.empty())
 		return false;
 	for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end(); ++it) {

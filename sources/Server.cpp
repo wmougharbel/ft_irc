@@ -541,12 +541,15 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break ;
 
 		case 8:
-			channel_name = message[1].substr(1, message[1].find(' ') - 1);
-			Channel*	channel = findChannel(channel_name);
-			if (!channel)
-				return (sendToClient(buildReply(SERVER, client.getNickname(), 403, "", 0), client));
-			return (channel->mode(modeString, arg, client));
-			mode(message[1],message[2 ] client[fd]);
+			channel_name = message[1].substr(1);
+			Channel* channel = findChannel(channel_name);
+			if (!channel) {
+				std::string reply = ":127.0.0.1 403 " + clients[fd].getNickname() + " #" + channel_name + " :No such channel\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
+			} else {
+				channel->mode(std::vector<std::string>(message.begin() + 2, message.end()), clients[fd]);
+			}
+			break;
 			
 		default:
 			break;
