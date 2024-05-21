@@ -255,7 +255,7 @@ std::vector<Channel> Server::getChannels(void) const
 
 void Server::extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
-	for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); it++)
+	for (clientIterator it = clients.begin(); it != clients.end(); it++)
 	{
 		if (incoming[1] == it->second.getNickname())
 			return (printInClient("Error, nickname already exists.", fd));
@@ -284,7 +284,7 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 		return (printInClient("Usage: </PRIVMSG> <TARGET> <message>", fd));
 	std::string target = message[1];
 	std::vector<std::string> text;
-	std::map<int, Client>::iterator it = clients.begin();
+	clientIterator it = clients.begin();
 
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
@@ -339,7 +339,7 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 	std::string	target = message[3].substr(1, message[3].length() - 1);
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 
-	for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); it++)
+	for (channelIterator it = _channList.begin(); it != _channList.end(); it++)
 	{
 		if (channel == it->getName())
 		{
@@ -363,8 +363,8 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 {
 	std::string	target = message[1];
 	std::string channel = message[2].substr(1, message[2].length() - 1);
-	std::vector<Channel>::iterator	it = _channList.begin();
-	std::map<int, Client>::iterator	clientIt = clients.begin();
+	channelIterator	it = _channList.begin();
+	clientIterator	clientIt = clients.begin();
 
 	for (it = _channList.begin(); it != _channList.end(); it++)
 		if (it->getName() == channel)
@@ -394,7 +394,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 {
 	std::string	channel;
 	std::vector<std::string> reason;
-	std::vector<Channel>::iterator it = _channList.begin();
+	channelIterator it = _channList.begin();
 	std::string names;
 	std::string reply;
 
