@@ -30,6 +30,7 @@
 # include <algorithm>
 # include <err.h>
 # include <map>
+#include <cerrno>
 # include "Client.hpp"
 # include "Server.hpp"
 # include "Channel.hpp"

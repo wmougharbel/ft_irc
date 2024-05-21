@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <cerrno>
 
 bool isRunning = false;
 
