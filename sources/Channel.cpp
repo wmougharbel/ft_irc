@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: walid <walid@student.42.fr>                +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:45:03 by walid             #+#    #+#             */
-/*   Updated: 2024/05/13 10:48:33 by walid            ###   ########.fr       */
+/*   Updated: 2024/05/18 15:27:34 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,10 +129,9 @@ void Channel::removeMember(const std::string& nickname) {
 			break;
 		}
 	}
+    // std::cout << "HERE" << std::endl;
 	if(hasOperatorPrivileges(nickname))
 		removeOperatorPrivileges(nickname);
-	if(_members.empty())
-		delete this;
 }
 
 bool Channel::isMember(const std::string& nickname) const {
