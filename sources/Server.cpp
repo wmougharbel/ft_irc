@@ -414,7 +414,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 			{
 				for (size_t i = 0; i < it->getMembers().size(); i++)
 				{
-					reply = std::string(":") + clients[fd].getNickname() + " has left #" + channel + "\r\n";
+					reply = clients[fd].getNickname() + " has left #" + channel + "\r\n";
 					send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
 				}
 				it->removeMember(clients[fd].getNickname());
@@ -435,6 +435,10 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 					reply = std::string(":") + SERVER_IP + " 366 " + it->getMembers()[i].getNickname() + " #" + channel + " :End of /NAMES list\r\n";
 					send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
 				}
+				reply = std::string(":") + SERVER_IP + " 353 " + clients[fd].getNickname() + " = #" + channel + " :" + names + "\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
+				reply = std::string(":") + SERVER_IP + " 366 " + clients[fd].getNickname() + " #" + channel + " :End of /NAMES list\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
 				if(it->getMembers().size() == 0)
 				{
 					std::cout << "Channel #"<< it->getName() << " is now empty and has been removed from the server!" << std::endl;
