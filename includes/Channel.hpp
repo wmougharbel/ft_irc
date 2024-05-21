@@ -74,7 +74,7 @@ public:
 	std::string	getName() const;
 	void printMode(Client &client, bool broadcast);
 	void mode(const std::vector<std::string> &message, Client &client);
-	Client findClient(const std::string& string nickname) const{
+	Client findClient(const std::string& string nickname) const;
 
 
 };
