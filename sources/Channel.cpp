@@ -101,11 +101,7 @@ void Channel::removeOperatorPrivileges(const std::string& nickname) {
 		}
 	}
 	if(_operators.empty() && !_members.empty()){
-		for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end();++it) {
-			if (it->getNickname() == nickname) 
-				continue;
-			setOperatorPrivileges(*it);
-		}
+			setOperatorPrivileges(_members[0]);
 	}
 }
 
