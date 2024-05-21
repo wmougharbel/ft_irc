@@ -3,7 +3,7 @@
 class Channel;
 class Client;
 void Channel::mode(const std::vector<std::string> &message, Client &client) {
-    std::string modes = message[0];
+    std::string modes = message[2];
     if(modes.empty())
     {
         printMode(client, false);
@@ -19,7 +19,7 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
         return;
     }
     bool addMode = true;
-    size_t argIndex = 1;
+    size_t argIndex = 3;
     for (size_t i = 0; i < modes.size(); ++i) 
     {
         char mode = modes[i];
