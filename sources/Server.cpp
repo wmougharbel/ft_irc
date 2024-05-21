@@ -274,6 +274,8 @@ void Server::extractUsername(std::vector<std::string> &incoming, std::map<int, C
 
 void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
+	if (message.size() < 3)
+		return (printInClient("Usage: </PRIVMSG> <TARGET> <message>", fd));
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
 	std::map<int, Client>::iterator it = clients.begin();
@@ -283,15 +285,15 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 	while (it != clients.end())
 	{
 		if (it->second.getNickname() == target)
-		{
 			clients[fd].sendMessage(text, it->first);
-		}
 		it++;
 	}
 }
 
 void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
+	if (message.size() < 3)
+		return (printInClient("Usage: </PRIVMSG> <TARGET> <message>", fd));
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
 	std::vector<Channel>::iterator it = _channList.begin();
@@ -334,6 +336,8 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 
 void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
+	if (message.size() != 4)
+		return (printInClient("Usage: </KICK> <CHANNEL> <NICK> <REASON>", fd));
 	std::string	target = message[3].substr(1, message[3].length() - 1);
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	std::vector<Channel>::iterator it = _channList.begin();
