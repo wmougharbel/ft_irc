@@ -68,7 +68,7 @@ bool Channel::isInviteOnly() const {
 
 bool	Channel::isInvited(const std::string& name)
 {
-	for (std::vector<std::string>::iterator it = invited.begin(); it != invited.end(); ++it) {
+	for (std::vector<std::string>::iterator it = _invited.begin(); it != _invited.end(); ++it) {
 		if (name == *it)
 			return (true);
 	}
@@ -89,7 +89,7 @@ bool Channel::checkChannelKey(const std::string& key) const {
 	return key == _ChannelKey;
 }
 
-void Channel::setOperatorPrivileges(const Client& member) {
+void Channel::setOperatorPrivileges(Client& member) {
 	_operators.push_back(member);
 }
 
@@ -161,12 +161,11 @@ std::vector<Client> Channel::getOperators() const
 	return (_operators);
 }
 
-Client channel::findClient(const std::string& string nickname) const{
-	if(_operators.empty() && !_members.empty()){
-		for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end();++it) {
-			if (it->getNickname() == nickname) 
-				return it;
-		}
+Client* Channel::findClient(const std::string& nickname){
+	for (size_t i = 0; i < _members.size(); i++)
+	{
+		if (nickname == _members[i].getNickname())
+			return (&_members[i]);
 	}
-	return NULL;
+	return (NULL);
 }

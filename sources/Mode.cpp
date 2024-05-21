@@ -1,21 +1,27 @@
 #include "../includes/Irc.hpp"
 
+class Channel;
+class Client;
 void Channel::mode(const std::vector<std::string> &message, Client &client) {
     std::string modes = message[0];
-    if(modes.empty()){
+    if(modes.empty())
+    {
         printMode(client, false);
         return;
     }
-    if (!hasOperatorPrivileges(client.getNickname())) {
-        std::string errorMessage = ":" + SERVER_IP + " 482 " + client.getNickname() + " #" + _name + " :You're not channel operator\r\n";
-        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) {
+    if (!hasOperatorPrivileges(client.getNickname())) 
+    {
+        std::string errorMessage = std::string(":") + SERVER_IP + " 482 " + client.getNickname() + " #" + _name + " :You're not channel operator\r\n";
+        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) 
+        {
             std::cerr << "Error, could not send error message" << std::endl;
         }
         return;
     }
     bool addMode = true;
     size_t argIndex = 1;
-    for (size_t i = 0; i < modes.size(); ++i) {
+    for (size_t i = 0; i < modes.size(); ++i) 
+    {
         char mode = modes[i];
 
         if (mode == '+') {
@@ -26,7 +32,8 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
             continue;
         }
 
-        switch (mode) {
+        switch (mode) 
+        {
             case 'i':
                 _isinviteOnly = addMode;
                 break;
@@ -34,51 +41,65 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                 _istopicRestricted = addMode;
                 break;
             case 'k':
-                if(addMode){
-                    if (argIndex < message.size()) {
+                if(addMode)
+                {
+                    if (argIndex < message.size()) 
+                    {
                         _ChannelKey = message[argIndex++];
                     } else continue;     
-                } else
+                } 
+                else
                     _ChannelKey.clear(); 
                 break;
             case 'o':
-                if(argIndex < message.size()){
-                    if(addMode){
-                        if(!hasOperatorPrivileges(message[argIndex])){
+                if(argIndex < message.size())
+                {
+                    if(addMode)
+                    {
+                        if(!hasOperatorPrivileges(message[argIndex]))
+                        {
                             if(!isMember(message[argIndex]))
-                                std::string errorMessage = ":" + SERVER_IP + " " + std::to_string(441) + " " + client.getNickname() + " " +_name + " " + message[argIndex++] + ":User is not on that channel\r\n";
-                                if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) {
+                            {
+                                std::string errorMessage = std::string(":") + SERVER_IP + " " + "441" + " " + client.getNickname() + " " +_name + " " + message[argIndex++] + ":User is not on that channel\r\n";
+                                if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) 
+                                {
                                     std::cerr << "Error, could not send mode message" << std::endl;
                                     return;
                                 }
-                            setOperatorPrivileges(findClient(message[argIndex++]));
+                            }
+                            setOperatorPrivileges(*findClient(message[argIndex++]));
                         }
-                    }else{
+                    }
+                    else
+                    {
                         if(hasOperatorPrivileges(message[argIndex]))
-                            removeOperatorPrivileges(message[argIndex])
+                            removeOperatorPrivileges(message[argIndex]);
                     }
                 } else continue;
                 break;
             case 'l':
-                if (addMode) {
-                    if (argIndex < message.size()) {
+                if (addMode) 
+                {
+                    if (argIndex < message.size())
+                    {
                         _islimit = true;
-                        _limit = std::stoi(message[argIndex++]);
+                        _limit = std::atoi(message[argIndex++].c_str());
                     } else continue;
                 }
                 else 
                     _islimit = false;
                 break;
             default:
-                 std::string errorMessage = ":" + SERVER_IP + " " + std::to_string(472) + " " + client.getNickname() + " " + "is unkown mode char to me\r\n";
-                        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) {
+                 std::string errorMessage = std::string(":") + SERVER_IP + " " + "472" + " " + client.getNickname() + " " + "is unkown mode char to me\r\n";
+                        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) 
+                        {
                             std::cerr << "Error, could not send mode message" << std::endl;
                             return;
                         }
                 break;
         }
     }
-    printMode(, true);
+    printMode(client, true);
 }
 
 void Channel::printMode(Client &client, bool broadcast)
@@ -94,17 +115,21 @@ void Channel::printMode(Client &client, bool broadcast)
         args += " " + ss.str();
     }
     if(!_ChannelKey.empty()) modes+= "k";
-    if(modes) modes = "+" + modes;
-    std::string modeMessage = ":" + SERVER_IP + " 324 " + client.getNickname() + " " + _name + " " + modes + args;
+    if(!modes.empty())
+        modes = "+" + modes;
+        
+    std::string modeMessage = std::string(":") + SERVER_IP + " 324 " + client.getNickname() + " " + _name + " " + modes + args;
     if(!broadcast)
+    {
         if (send(client.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) {
             std::cerr << "Error, could not send mode message" << std::endl;
             return;
         }
-    else{
+    } else
+    {
         for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
-            modeMessage = ":" + SERVER_IP + " 324 " + it.getNickname() + " " + _name + " " + modes + args;
-            if (send(it.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) {
+            modeMessage = std::string(":") + SERVER_IP + " 324 " + it->getNickname() + " " + _name + " " + modes + args;
+            if (send(it->getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) {
                 std::cerr << "Error, could not send mode message" << std::endl;
                 return;
             }

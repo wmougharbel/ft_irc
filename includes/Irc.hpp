@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef Irc_H
-# define Irc_H
+#ifndef IRC_HPP
+# define IRC_HPP
 
 # include <string>
 # include <stdbool.h>

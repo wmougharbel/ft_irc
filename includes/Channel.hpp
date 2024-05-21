@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CHANEL_HPP
-#define CHANEL_HPP
+#ifndef CHANNEL_HPP
+#define CHANNEL_HPP
 
 #include <string>
 #include <vector>
@@ -60,7 +60,7 @@ public:
 	bool isPassword() const;
 	bool checkChannelKey(const std::string& key) const;
 
-    void setOperatorPrivileges(const Client& member);
+    void setOperatorPrivileges(Client& member);
     void removeOperatorPrivileges(const std::string &member);
 	bool hasOperatorPrivileges(const std::string &member) const;
 
@@ -74,7 +74,7 @@ public:
 	std::string	getName() const;
 	void printMode(Client &client, bool broadcast);
 	void mode(const std::vector<std::string> &message, Client &client);
-	Client findClient(const std::string& string nickname) const;
+	Client* findClient(const std::string& nickname);
 
 
 };
