@@ -395,10 +395,12 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 	std::string	channel;
 	std::vector<std::string> reason;
 	std::vector<Channel>::iterator it = _channList.begin();
+	std::string names;
+	std::string reply;
 
 	if (message.size() < 3)
 	{
-		printInClient("Error, usage: /LEAVE #<channel>", fd);
+		printInClient("Error, usage: /PART #<channel>", fd);
 		return ;
 	}
 	for (size_t i = 2; i < message.size(); i++)
@@ -410,10 +412,32 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 		{
 			if (it->isMember(clients[fd].getNickname()))
 			{
+				for (size_t i = 0; i < it->getMembers().size(); i++)
+				{
+					reply = std::string(":") + clients[fd].getNickname() + " has left #" + channel + "\r\n";
+					send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+				}
 				it->removeMember(clients[fd].getNickname());
+				for (size_t i = 0; i < it->getMembers().size(); i++)
+				{
+					for (size_t j = 0; j < it->getOperators().size(); j++)
+					{
+						if (it->getOperators()[j].getNickname() == it->getMembers()[i].getNickname())
+							names += "@";
+					}
+					names += it->getMembers()[i].getNickname();
+					names += " ";
+				}
+				for (size_t i = 0; i < it->getMembers().size(); i++)
+				{
+					reply = std::string(":") + SERVER_IP + " 353 " + it->getMembers()[i].getNickname() + " = #" + channel + " :" + names + "\r\n";
+					send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+					reply = std::string(":") + SERVER_IP + " 366 " + it->getMembers()[i].getNickname() + " #" + channel + " :End of /NAMES list\r\n";
+					send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+				}
 				if(it->getMembers().size() == 0)
 				{
-					std::cout << it->getName() << " is empty now. Deleting..." << std::endl;
+					std::cout << "Channel #"<< it->getName() << " is now empty and has been removed from the server!" << std::endl;
 					_channList.erase(it);
 					printInClient("Channel was deleted because of you...", fd);
 					return ;
