@@ -24,12 +24,13 @@ class Channel {
 private:
 	std::string _name;
 
+	
 	std::vector<Client >	_members;
 	std::vector<Client >	_operators;
+	std::vector<std::string >	_invited;
 
 	std::string	_topic;
 	std::string	_ChannelKey; 
-	std::string	_password;
 
 	bool		_isinviteOnly;
 	bool		_islimit;
@@ -53,6 +54,7 @@ public:
 
 	void setInviteOnly(bool inviteOnly);
 	bool isInviteOnly() const;
+	bool isInvited(const std::string& name);
 
 	void setChannelKey(const std::string& key);
 	bool isPassword() const;
@@ -70,6 +72,11 @@ public:
 	std::vector<Client> getOperators() const;
 
 	std::string	getName() const;
+	void printMode(Client &client, bool broadcast);
+	void mode(const std::vector<std::string> &message, Client &client);
+	Client findClient(const std::string& string nickname) const;
+
+
 };
 
 #endif

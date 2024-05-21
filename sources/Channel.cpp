@@ -18,7 +18,7 @@ Channel::Channel(const std::string& name, const Client& firstMember) : _name(nam
 	_members.push_back(firstMember);
 	_operators.push_back(firstMember);
 	_topic = "Default Topic";
-	_password = "";
+	_ChannelKey = "";
 }
 
 Channel::~Channel() {}
@@ -66,6 +66,14 @@ bool Channel::isInviteOnly() const {
 	return _isinviteOnly;
 }
 
+bool	Channel::isInvited(const std::string& name)
+{
+	for (std::vector<std::string>::iterator it = invited.begin(); it != invited.end(); ++it) {
+		if (name == *it)
+			return (true);
+	}
+	return (false);
+}
 
 
 void Channel::setChannelKey(const std::string& key) {
@@ -131,7 +139,7 @@ void Channel::removeMember(const std::string& nickname) {
 		removeOperatorPrivileges(nickname);
 }
 
-bool Channel::isMember(const std::string& nickname) const {
+bool Channel::isMember (const std::string& nickname) const {
 	if(_members.empty())
 		return false;
 	for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
@@ -151,4 +159,14 @@ std::vector<Client> Channel::getMembers() const
 std::vector<Client> Channel::getOperators() const
 {
 	return (_operators);
+}
+
+Client channel::findClient(const std::string& string nickname) const{
+	if(_operators.empty() && !_members.empty()){
+		for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end();++it) {
+			if (it->getNickname() == nickname) 
+				return it;
+		}
+	}
+	return NULL;
 }
