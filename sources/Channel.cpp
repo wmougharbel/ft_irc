@@ -164,3 +164,13 @@ std::vector<Client> Channel::getOperators() const
 {
 	return (_operators);
 }
+
+Client channel::findClient(const std::string& string nickname) const{
+	if(_operators.empty() && !_members.empty()){
+		for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end();++it) {
+			if (it->getNickname() == nickname) 
+				return it;
+		}
+	}
+	return NULL;
+}

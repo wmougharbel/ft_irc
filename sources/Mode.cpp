@@ -42,19 +42,22 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                     _ChannelKey.clear(); 
                 break;
             case 'o':
-                if(addMode){
-                    if(argIndex < message.size()){
+                if(argIndex < message.size()){
+                    if(addMode){
                         if(!hasOperatorPrivileges(message[argIndex])){
                             if(!isMember(message[argIndex]))
-                                std::string errorMessage = ":" + SERVER_IP + " " + std::to_string(441) + " " + client.getNickname() + " " +_name + " " + message[argIndex] + ":User is not on that channel\r\n";
+                                std::string errorMessage = ":" + SERVER_IP + " " + std::to_string(441) + " " + client.getNickname() + " " +_name + " " + message[argIndex++] + ":User is not on that channel\r\n";
                                 if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) {
                                     std::cerr << "Error, could not send mode message" << std::endl;
                                     return;
                                 }
-                            setOperatorPrivileges()
+                            setOperatorPrivileges(findClient(message[argIndex++]));
                         }
+                    }else{
+                        if(hasOperatorPrivileges(message[argIndex]))
+                            removeOperatorPrivileges(message[argIndex])
                     }
-                }
+                } else continue;
                 break;
             case 'l':
                 if (addMode) {
@@ -62,6 +65,7 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                         _islimit = true;
                         _limit = std::stoi(message[argIndex++]);
                     } else continue;
+                }
                 else 
                     _islimit = false;
                 break;
@@ -74,7 +78,6 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                 break;
         }
     }
-    for(_members)
     printMode(, true);
 }
 
