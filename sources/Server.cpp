@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <cerrno>
 
 bool isRunning = false;
 
@@ -227,7 +228,7 @@ void Server::parser(std::string &message, std::map<int, Client> &clients, int i,
 	int clientFd = pfds[i].fd;
 	std::vector<std::string> split = ft_split(message);
 	std::string servPass = getPassword();
-	getCommand(split, clients, clientFd, servPass, pfds);
+	getCommand(split, clients, clientFd, servPass);
 }
 
 Channel     Server::createChannel(std::string &name, int fd, std::map<int, Client> &clients)
@@ -281,16 +282,18 @@ void	Server::sendMessageToUser(std::vector<std::string> &message, std::map<int, 
 {
 	if (message.size() < 3)
 		return (printInClient("Usage: </PRIVMSG> <TARGET> <message>", fd));
-	std::string target = message[1].substr(1, message[1].length() - 1);
+	std::string target = message[1];
 	std::vector<std::string> text;
-	clientIterator it = clients.begin();
-	
+	std::map<int, Client>::iterator it = clients.begin();
+
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
 	while (it != clients.end())
 	{
 		if (it->second.getNickname() == target)
+		{
 			clients[fd].sendMessage(text, it->first);
+		}
 		it++;
 	}
 }
@@ -301,8 +304,6 @@ void	Server::sendMessageToChannel(std::vector<std::string> &message, std::map<in
 		return (printInClient("Usage: </PRIVMSG> <TARGET> <message>", fd));
 	std::string target = message[1].substr(1, message[1].length() - 1);
 	std::vector<std::string> text;
-	std::vector<Channel>::iterator it = _channList.begin();
-	std::vector<Client>::iterator	clientIt = it->getMembers().begin();
 	
 	for (size_t i = 1; i < message.size(); i++)
 		text.push_back(message[i]);
@@ -337,14 +338,12 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 		return (printInClient("Usage: </KICK> <CHANNEL> <NICK> <REASON>", fd));
 	std::string	target = message[3].substr(1, message[3].length() - 1);
 	std::string channel = message[2].substr(1, message[2].length() - 1);
-	std::vector<Channel>::iterator it = _channList.begin();
-	std::vector<Client>::iterator clientIt = it->getOperators().begin();
 
-	for (it; it != _channList.end(); it++)
+	for (std::vector<Channel>::iterator it = _channList.begin(); it != _channList.end(); it++)
 	{
 		if (channel == it->getName())
 		{
-			for (clientIt; clientIt != it->getOperators().end(); clientIt++)
+			for (std::vector<Client>::iterator clientIt = it->getOperators().begin(); clientIt != it->getOperators().end(); clientIt++)
 			{
 				if (clientIt->getNickname() == clients[fd].getNickname())
 				{
@@ -367,7 +366,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	std::vector<Channel>::iterator	it = _channList.begin();
 	std::map<int, Client>::iterator	clientIt = clients.begin();
 
-	for (it; it != _channList.end(); it++)
+	for (it = _channList.begin(); it != _channList.end(); it++)
 		if (it->getName() == channel)
 			break;
 	if (it == _channList.end())
@@ -377,7 +376,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	}
 	if (it->isMember(clients[fd].getNickname()) && it->hasOperatorPrivileges(clients[fd].getNickname()))
 	{
-		for (clientIt; clientIt != clients.end(); clientIt++)
+		for (clientIt = clients.begin(); clientIt != clients.end(); clientIt++)
 			if (clientIt->second.getNickname() == target)
 				break ;
 		if (clientIt == clients.end())
@@ -405,7 +404,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 	for (size_t i = 2; i < message.size(); i++)
 		reason.push_back(message[i]);
 	channel = message[1].substr(1, message[1].length() - 1);
-	for (it; it != _channList.end(); it++)
+	for (it = _channList.begin(); it != _channList.end(); it++)
 	{
 		if (it->getName() == channel)
 		{
@@ -424,7 +423,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 	}
 }
 
-void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds)
+void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass)
 {
 	if (serverPass == incoming[1])
 	{
@@ -436,14 +435,14 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 	}
 }
 
-void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds)
+void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
 	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART"};
 	std::string channel_name;
 	std::string receivedCommand = capitalize(message[0]);
 	size_t i;
-	int auth_status;
 	bool channel_exists = false;
+
 	for (i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
 		if (receivedCommand == commands[i])
 			break;
@@ -530,7 +529,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break;
 
 		case 3:
-			extractPassword(message, clients, fd, pass, pfds);
+			extractPassword(message, clients, fd, pass);
 			break;
 
 		case 4:

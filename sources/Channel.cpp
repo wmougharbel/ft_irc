@@ -12,8 +12,9 @@
 
 #include "../includes/Channel.hpp"
 
-Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(false), _istopicRestricted(false),
-				 _ispassword(false),_islimit(false){
+Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(false), _istopicRestricted(false){
+	_ispassword = false;
+	_islimit = false;
 	_members.push_back(firstMember);
 	_operators.push_back(firstMember);
 	_topic = "Default Topic";

@@ -2,7 +2,7 @@ NAME = ircserv
 
 CPP = c++
 
-CPPFLAGS = -g #-Wall -Wextra -Werror -g -std=c++98 -pedantic
+CPPFLAGS = -g -Wall -Wextra -Werror -g -std=c++98 -pedantic
 
 RM = rm -rf
 

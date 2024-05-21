@@ -57,8 +57,8 @@ class Server
         //parser
         void extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd);
         void extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd);
-        void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass, std::vector<pollfd> &pfds);
-        void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass, std::vector<pollfd> &pfds);
+        void extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass);
+        void getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass);
         void sendMessageToUser(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void sendMessageToChannel(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
         void privMsg(std::vector<std::string> &message, std::map<int, Client> &clients, int fd);
