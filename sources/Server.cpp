@@ -158,14 +158,6 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 	}
 	else
 	{
-		// // APPROACH 1
-		// char *end = strstr(tempBuf, "\r\n");
-		// buf.append(tempBuf, end - tempBuf);
-		// std::cout << buf << std::endl;
-		// // parser(buf, clients, i, pfds);
-		// buf.clear();
-
-		// APPROACH 2
 		buf.append(tempBuf, readBytes);
 		size_t pos = buf.find("\r\n");
 		while (pos != std::string::npos)
@@ -350,7 +342,7 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 {
 	if (message.size() != 4)
 		return (printInClient("Usage: </KICK> <CHANNEL> <NICK> <REASON>", fd));
-	std::string	target = message[3].substr(1, message[3].length() - 1);
+	std::string	target = message[3].substr(1, message[3].length() - 1);;
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	std::string names;
 	std::string reply;
@@ -405,20 +397,14 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 		if (it->getName() == channel)
 			break;
 	if (it == _channList.end())
-	{
-		printInClient("Couldn't invite " + target + ". The channel #" + channel + " does not exist!", fd);
-		return ;
-	}
+		return (printInClient("Couldn't invite " + target + ". The channel #" + channel + " does not exist!", fd));
 	if (it->isMember(clients[fd].getNickname()) && it->hasOperatorPrivileges(clients[fd].getNickname()))
 	{
 		for (clientIt = clients.begin(); clientIt != clients.end(); clientIt++)
 			if (clientIt->second.getNickname() == target)
 				break ;
 		if (clientIt == clients.end())
-		{
-			printInClient("Couldn't invite " + target + ". No user with this nickname exist on this server!", fd);
-			return ;
-		}
+			return (printInClient("Couldn't invite " + target + ". No user with this nickname exist on this server!", fd));
 		if (it->getMembers().size() >= static_cast<size_t>(it->getLimit()))
 			return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
 		if (it->isInvited(target))
@@ -537,7 +523,6 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 							if (!it->checkChannelKey(message[2]))
 								return (printInClient("Wrong channel password", fd));
 						}
-						std::cout << "Limit: " << it->getLimit() << std::endl;
 						if (it->getMembers().size() >= it->getLimit())
 							return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
 						it->addMember(clients[fd]);
@@ -668,8 +653,8 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			}
 			else
 			{
-				std::string reply = ":127.0.0.1 403 :Not enough arguments!\r\n";
-				send(fd, reply.c_str(), reply.length(), 0);
+				std::string reply = "Usage: </TOPIC> <INPUT> \r\n";
+				printInClient(reply, fd);
 			}
 			break ;
 		default:
