@@ -255,17 +255,31 @@ std::vector<Channel> Server::getChannels(void) const
 
 void Server::extractNickname(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+	if (incoming.size() != 2)
+		return (printInClient("Usage: </NICK> <NICKNAME>", fd));
 	for (clientIterator it = clients.begin(); it != clients.end(); it++)
 	{
 		if (incoming[1] == it->second.getNickname())
-			return (printInClient("Error, nickname already exists.", fd));
+		{
+			printInClient("Error, nickname already exists.", fd);
+			printInClient("Nickname set to " + clients[fd].getNickname(), fd);
+			return ;
+		}
 	}
 	clients[fd].setNickname(incoming[1]);
 }
 
 void Server::extractUsername(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd)
 {
+	if (incoming.size() != 5)
+		return (printInClient("Usage: </USER> <USERNAME> 0 * <REALNAME>", fd));
+	for(clientIterator it = clients.begin(); it != clients.end(); it++)
+	{
+		if (incoming[1] == it->second.getUsername())
+			return (printInClient("Error, username already exists.", fd));
+	}
 	clients[fd].setUsername(incoming[1]);
+	printInClient("Username set to " + clients[fd].getUsername(), fd);
 }
 
 Channel*	Server::findChannel(const std::string& name)
@@ -486,6 +500,8 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				{
 					if (it->getName() == channel_name)
 					{
+						if (it->isInviteOnly())
+							return (printInClient("Channel " + it->getName() + " is invite only!", fd));
 						it->addMember(clients[fd]);
 						std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
 						send(fd, reply.c_str(), reply.length(), 0);

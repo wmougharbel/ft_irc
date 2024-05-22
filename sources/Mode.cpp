@@ -3,6 +3,8 @@
 class Channel;
 class Client;
 void Channel::mode(const std::vector<std::string> &message, Client &client) {
+    if (message.size() == 0)
+        return ;
     std::string modes = message[0];
     if(modes.empty())
     {
