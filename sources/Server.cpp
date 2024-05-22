@@ -164,7 +164,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		{
 			std::string message = buf.substr(0, pos);
 			parser(message, clients, i, pfds);
-			// std::cout << message << std::endl;
+			std::cout << message << std::endl;
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
@@ -236,6 +236,16 @@ void SignalHandler(int signum)
 	{
 		std::cout << "\nInterrupt signal received. Shutting down server..\n";
 		isRunning = false;
+	}
+	else if (signum == SIGQUIT)
+	{
+		std::cout << "Ctrl + D signal received. Shutting down server..\n";
+	}
+	    if (signum == SIGTSTP) {
+        std::cout << "Received SIGTSTP, suspending...\n";
+        raise(SIGSTOP); // Actually suspend the process
+    } else if (signum == SIGCONT) {
+        std::cout << "Received SIGCONT, resuming...\n";
 	}
 	exit(signum);
 }
@@ -491,10 +501,42 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 	}
 }
 
-void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
+void Server::getCommand(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &pass)
 {
 	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART", "MODE", "TOPIC"};
 	std::string channel_name;
+	std::string filteredMsg = "";
+	std::vector<std::string> message;
+
+for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.end(); ++mit) {
+        std::string tempMsg;
+        for (size_t i = 0; i < mit->length(); ++i) {
+            if (isprint((*mit)[i])) {
+                tempMsg += (*mit)[i];
+            }
+        }
+        filteredMsg += tempMsg;
+        if (mit != incoming.end() - 1) {
+            filteredMsg += " ";
+        }
+        message.push_back(tempMsg);
+    }
+	// for(std::vector<std::string>::iterator mit = oldmsg.begin(); mit != oldmsg.end(); mit++)
+	// {
+	// 	for (size_t i = 0; i < mit->length(); i++)
+	// 	{
+	// 		if (isprint((*mit)[i]))
+	// 			filteredMsg += (*mit)[i];
+	// 	}
+	// 	if (mit != oldmsg.end())
+	// 		filteredMsg +=" ";
+	// std::cout << "filtered: " << filteredMsg << std::endl;	
+	// 	message.push_back(filteredMsg);
+	// }
+
+
+    // Final output
+    std::cout << "Final filtered message: " << filteredMsg << std::endl;
 	std::string receivedCommand = capitalize(message[0]);
 	Channel* channel;
 	size_t i;
@@ -681,6 +723,9 @@ int main(int argc, char *argv[])
 	}
 
 	signal(SIGINT, SignalHandler);
+	signal(SIGQUIT, SignalHandler);
+	signal(SIGSTOP, SignalHandler);
+	signal(SIGCONT, SignalHandler);
 	Server serv(argv[1], argv[2]);
 	isRunning = true;
 
