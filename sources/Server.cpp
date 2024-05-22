@@ -172,7 +172,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		{
 			std::string message = buf.substr(0, pos);
 			parser(message, clients, i, pfds);
-			std::cout << message << std::endl;
+			//std::cout << message << std::endl;
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
@@ -385,7 +385,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 			break;
 	if (it == _channList.end())
 	{
-		printInClient("Couldn't invite client, check your channel's name!", fd);
+		printInClient("Couldn't invite " + target + ". The channel #" + channel + " does not exist!", fd);
 		return ;
 	}
 	if (it->isMember(clients[fd].getNickname()) && it->hasOperatorPrivileges(clients[fd].getNickname()))
@@ -395,13 +395,22 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 				break ;
 		if (clientIt == clients.end())
 		{
-			printInClient("Couldn't invite client, check your client's name!", fd);
+			printInClient("Couldn't invite " + target + ". No user with this nickname exist on this server!", fd);
 			return ;
 		}
-		it->addMember(clientIt->second);
-		printInClient(clients[fd].getNickname() + " invited " + target + " to " + channel, fd);
-		printInClient(clients[fd].getNickname() + " invited you " + " to " + channel, clientIt->first);
+		std::vector<std::string> msg;
+		msg.push_back("JOIN");
+		msg.push_back("#" + channel);
+		if (it->isMember(target))
+			return (printInClient(target + " is already a member of #" + it->getName(), fd));
+		it->setInviteOnly(false);
+		getCommand(msg, clients, clientIt->second.getFd(), _password);
+		it->setInviteOnly(true);
+		printInClient("You invited " + target + " to " + channel, fd);
+		printInClient(clients[fd].getNickname() + " invited you to " + channel, clientIt->first);
 	}
+	else
+		printInClient("You can't invite " + target + " to #" + it->getName(), fd);
 }
 
 void Server::leave(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
