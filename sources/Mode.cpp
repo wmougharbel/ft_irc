@@ -83,7 +83,16 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                     if (argIndex < message.size())
                     {
                         _islimit = true;
-                        _limit = std::atoi(message[argIndex++].c_str());
+                        if (std::atoi(message[argIndex].c_str()) <= 0)
+                        {
+                            _limit = 1;
+                            argIndex++;
+                        }
+                        else
+                        {
+                            _limit = std::atoi(message[argIndex].c_str());
+                            argIndex++;
+                        }
                     } else continue;
                 }
                 else 

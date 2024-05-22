@@ -36,15 +36,15 @@ private:
 	bool		_islimit;
 	bool		_istopicRestricted;
 	bool		_ispassword;
-	int			_limit;
+	size_t			_limit;
 
 public:
 	Channel(const std::string& name,const Client& firstMember);
 	~Channel(); 
 
 	void setIsLimit(bool islimit);
-	void setlimit(const int limit);
-	int  getLimit() const;
+	void setlimit(const size_t limit);
+	size_t  getLimit() const;
 	
 
 	void setTopic(const std::string& topic);

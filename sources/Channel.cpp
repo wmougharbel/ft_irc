@@ -28,11 +28,11 @@ void Channel::setIsLimit(bool islimit){
 	this->_islimit = islimit;
 }
 
-void Channel::setlimit(const int limit){
+void Channel::setlimit(const size_t limit){
 	this->_limit = limit;
 }
 
-int Channel::getLimit() const{
+size_t Channel::getLimit() const{
 	return _limit;
 }
 

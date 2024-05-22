@@ -533,12 +533,12 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 						if (it->isPassword())
 						{
 							if (message.size() != 3)
-								return (printInClient("+k channel usage: </JOIN> #<CHANNEL> <PASSWORD>", fd));
-							std::cout << message.size() << std::endl;
+								return (printInClient("+k channel usage: </JOIN> #<CHANNEL> <PASSWORD>", fd));\
 							if (!it->checkChannelKey(message[2]))
 								return (printInClient("Wrong channel password", fd));
 						}
-						if (it->getMembers().size() >= static_cast<size_t>(it->getLimit()))
+						std::cout << "Limit: " << it->getLimit() << std::endl;
+						if (it->getMembers().size() >= it->getLimit())
 							return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
 						it->addMember(clients[fd]);
 						std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
