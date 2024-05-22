@@ -69,6 +69,8 @@ public:
 	void removeMember(const std::string& nickname);
 	bool isMember(const std::string& nickname) const;
 
+	void addInvited(const std::string &client);
+
 	std::vector<Client> getMembers() const;
 	std::vector<Client> getOperators() const;
 

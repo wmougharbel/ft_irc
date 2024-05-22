@@ -400,7 +400,6 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	channelIterator	it = _channList.begin();
 	clientIterator	clientIt = clients.begin();
-	bool inviteOnly = true;
 
 	for (it = _channList.begin(); it != _channList.end(); it++)
 		if (it->getName() == channel)
@@ -422,16 +421,9 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 		}
 		if (it->getMembers().size() >= static_cast<size_t>(it->getLimit()))
 			return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
-		std::vector<std::string> msg;
-		msg.push_back("JOIN");
-		msg.push_back("#" + channel);
-		if(it->isPassword())
-			msg.push_back(it->getPassword());
-		if (it->isMember(target))
-			return (printInClient(target + " is already a member of #" + it->getName(), fd));
-		inviteOnly = it->2
-		getCommand(msg, clients, clientIt->second.getFd(), _password);
-		it->setInviteOnly(true);
+		if (it->isInvited(target))
+			return (printInClient(target + " is already invited to #" + it->getName(), fd));
+		it->addInvited(target);
 		printInClient("You invited " + target + " to " + channel, fd);
 		printInClient(clients[fd].getNickname() + " invited you to " + channel, clientIt->first);
 	}
@@ -536,12 +528,13 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				{
 					if (it->getName() == channel_name)
 					{
-						if (it->isInviteOnly())
+						if (it->isInviteOnly() && !it->isInvited(clients[fd].getNickname()))
 							return (printInClient("Channel " + it->getName() + " is invite only!", fd));
 						if (it->isPassword())
 						{
 							if (message.size() != 3)
 								return (printInClient("+k channel usage: </JOIN> #<CHANNEL> <PASSWORD>", fd));
+							std::cout << message.size() << std::endl;
 							if (!it->checkChannelKey(message[2]))
 								return (printInClient("Wrong channel password", fd));
 						}

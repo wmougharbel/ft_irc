@@ -45,6 +45,7 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                     if (argIndex < message.size()) 
                     {
                         _ChannelKey = message[argIndex++];
+                        _ispassword = true;
                     } else continue;     
                 } 
                 else

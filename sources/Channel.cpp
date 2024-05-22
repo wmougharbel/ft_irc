@@ -13,7 +13,7 @@
 #include "../includes/Channel.hpp"
 
 Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(true), _istopicRestricted(true){
-	_ispassword = true;
+	_ispassword = false;
 	_islimit = true;
 	_limit = 10;
 	_members.push_back(firstMember);
@@ -101,6 +101,11 @@ void Channel::setOperatorPrivileges(Client& member) {
 
 void Channel::addMember(const Client& member){
 	_members.push_back(member);
+}
+
+void Channel::addInvited(const std::string &member)
+{
+	_invited.push_back(member);
 }
 
 void Channel::removeOperatorPrivileges(const std::string& nickname) {
