@@ -137,3 +137,34 @@ void Channel::printMode(Client &client, bool broadcast)
 
     }
 }
+
+
+void Channel::topic(const std::vector<std::string> &message, Client &client){
+	if(message.size() == 2)
+    {
+        std::string modeMessage = std::string(":") + SERVER_IP + " 332 " + client.getNickname() + " " + _name + " :" + _topic  + "\r\n";
+        if (send(client.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) 
+        {
+            std::cerr << "Error, could not send mode message" << std::endl;
+            return;
+        }
+        return;
+    }
+    if (_istopicRestricted && !hasOperatorPrivileges(client.getNickname())) 
+    {
+        std::string errorMessage = client.getNickname() + " #" + _name + " :You're not channel operator\r\n";
+        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) 
+        {
+            std::cerr << "Error, could not send error message" << std::endl;
+            return;
+        }
+        return;
+    }
+    _topic = message[2];
+    std::string modeMessage = std::string(":") + SERVER_IP + " 332 " + client.getNickname() + " " + _name + " :" + _topic  + "\r\n";
+    if (send(client.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) 
+        {
+            std::cerr << "Error, could not send mode message" << std::endl;
+            return;
+        }
+}

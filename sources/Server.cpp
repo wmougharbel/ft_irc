@@ -488,7 +488,7 @@ void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, C
 
 void Server::getCommand(std::vector<std::string> &message, std::map<int, Client> &clients, int fd, std::string &pass)
 {
-	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART", "MODE"};
+	std::string commands[] = {"JOIN", "NICK", "USER", "PASS", "PRIVMSG", "KICK", "INVITE", "PART", "MODE", "TOPIC"};
 	std::string channel_name;
 	std::string receivedCommand = capitalize(message[0]);
 	Channel* channel;
@@ -619,9 +619,31 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				}
 			}
 			else
+			{
 				std::string reply = ":127.0.0.1 403 :Not enough arguments!\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
+			}
 			break ;
 
+		case 9:
+			if(message.size() >= 2)
+			{
+				channel_name = message[1].substr(1);
+				channel = findChannel(channel_name);
+				if (!channel) 
+				{
+					std::string reply = ":127.0.0.1 403 " + clients[fd].getNickname() + " #" + channel_name + " :No such channel\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
+				}
+				else 
+					channel->topic(message, clients[fd]);
+			}
+			else
+			{
+				std::string reply = ":127.0.0.1 403 :Not enough arguments!\r\n";
+				send(fd, reply.c_str(), reply.length(), 0);
+			}
+			break ;
 		default:
 			break;
 		}
