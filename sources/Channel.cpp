@@ -90,6 +90,11 @@ bool Channel::checkChannelKey(const std::string& key) const {
 	return key == _ChannelKey;
 }
 
+std::string	Channel::getPassword() const
+{
+	return (_ChannelKey);
+}
+
 void Channel::setOperatorPrivileges(Client& member) {
 	_operators.push_back(member);
 }

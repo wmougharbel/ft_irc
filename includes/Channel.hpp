@@ -59,6 +59,7 @@ public:
 	void setChannelKey(const std::string& key);
 	bool isPassword() const;
 	bool checkChannelKey(const std::string& key) const;
+	std::string	getPassword() const;
 
     void setOperatorPrivileges(Client& member);
     void removeOperatorPrivileges(const std::string &member);

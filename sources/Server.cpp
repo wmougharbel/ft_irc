@@ -400,6 +400,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	channelIterator	it = _channList.begin();
 	clientIterator	clientIt = clients.begin();
+	bool inviteOnly = true;
 
 	for (it = _channList.begin(); it != _channList.end(); it++)
 		if (it->getName() == channel)
@@ -419,12 +420,16 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 			printInClient("Couldn't invite " + target + ". No user with this nickname exist on this server!", fd);
 			return ;
 		}
+		if (it->getMembers().size() >= static_cast<size_t>(it->getLimit()))
+			return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
 		std::vector<std::string> msg;
 		msg.push_back("JOIN");
 		msg.push_back("#" + channel);
+		if(it->isPassword())
+			msg.push_back(it->getPassword());
 		if (it->isMember(target))
 			return (printInClient(target + " is already a member of #" + it->getName(), fd));
-		it->setInviteOnly(false);
+		inviteOnly = it->2
 		getCommand(msg, clients, clientIt->second.getFd(), _password);
 		it->setInviteOnly(true);
 		printInClient("You invited " + target + " to " + channel, fd);
@@ -533,6 +538,15 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 					{
 						if (it->isInviteOnly())
 							return (printInClient("Channel " + it->getName() + " is invite only!", fd));
+						if (it->isPassword())
+						{
+							if (message.size() != 3)
+								return (printInClient("+k channel usage: </JOIN> #<CHANNEL> <PASSWORD>", fd));
+							if (!it->checkChannelKey(message[2]))
+								return (printInClient("Wrong channel password", fd));
+						}
+						if (it->getMembers().size() >= static_cast<size_t>(it->getLimit()))
+							return (printInClient("Channel " + it->getName() + " has reached its limit!", fd));
 						it->addMember(clients[fd]);
 						std::string reply = ":" + clients[fd].getNickname() + " JOIN #" + channel_name + "\r\n";
 						send(fd, reply.c_str(), reply.length(), 0);
