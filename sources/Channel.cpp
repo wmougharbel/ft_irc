@@ -15,6 +15,7 @@
 Channel::Channel(const std::string& name, const Client& firstMember) : _name(name), _isinviteOnly(true), _istopicRestricted(true){
 	_ispassword = true;
 	_islimit = true;
+	_limit = 10;
 	_members.push_back(firstMember);
 	_operators.push_back(firstMember);
 	_topic = "Default Topic";

@@ -604,7 +604,7 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 				std::string reply = ":127.0.0.1 403 " + clients[fd].getNickname() + " #" + channel_name + " :No such channel\r\n";
 				send(fd, reply.c_str(), reply.length(), 0);
 			} else {
-				channel->mode(std::vector<std::string>(message.begin() + 2, message.end()), clients[fd]);
+				channel->mode(message, clients[fd]);
 			}
 			break ;
 

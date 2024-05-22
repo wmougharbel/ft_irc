@@ -3,17 +3,14 @@
 class Channel;
 class Client;
 void Channel::mode(const std::vector<std::string> &message, Client &client) {
-    if (message.size() == 0)
-        return ;
-    std::string modes = message[0];
-    if(modes.empty())
+    if(message.size() == 2)
     {
         printMode(client, false);
         return;
     }
     if (!hasOperatorPrivileges(client.getNickname())) 
     {
-        std::string errorMessage = std::string(":") + SERVER_IP + " 482 " + client.getNickname() + " #" + _name + " :You're not channel operator\r\n";
+        std::string errorMessage = client.getNickname() + " #" + _name + " :You're not channel operator\r\n";
         if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0) 
         {
             std::cerr << "Error, could not send error message" << std::endl;
@@ -21,10 +18,10 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
         return;
     }
     bool addMode = true;
-    size_t argIndex = 1;
-    for (size_t i = 0; i < modes.size(); ++i) 
+    size_t argIndex = 3;
+    for (size_t i = 0; i < message[2].size(); ++i) 
     {
-        char mode = modes[i];
+        char mode = message[2][i];
 
         if (mode == '+') {
             addMode = true;
@@ -119,8 +116,7 @@ void Channel::printMode(Client &client, bool broadcast)
     if(!_ChannelKey.empty()) modes+= "k";
     if(!modes.empty())
         modes = "+" + modes;
-        
-    std::string modeMessage = std::string(":") + SERVER_IP + " 324 " + client.getNickname() + " " + _name + " " + modes + args;
+    std::string modeMessage = std::string(":") + SERVER_IP + " 324 " + client.getNickname() + " " + _name + " " + modes + args + "\r\n";
     if(!broadcast)
     {
         if (send(client.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) {
@@ -129,9 +125,11 @@ void Channel::printMode(Client &client, bool broadcast)
         }
     } else
     {
-        for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end(); ++it) {
-            modeMessage = std::string(":") + SERVER_IP + " 324 " + it->getNickname() + " " + _name + " " + modes + args;
-            if (send(it->getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) {
+        for (std::vector<Client>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+        {
+            modeMessage = std::string(":") + SERVER_IP + " 324 " + it->getNickname() + " " + _name + " " + modes + " " + args + "\r\n";
+            if (send(it->getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0)
+            {
                 std::cerr << "Error, could not send mode message" << std::endl;
                 return;
             }
