@@ -172,7 +172,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		{
 			std::string message = buf.substr(0, pos);
 			parser(message, clients, i, pfds);
-			//std::cout << message << std::endl;
+			// std::cout << message << std::endl;
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
@@ -352,6 +352,8 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 		return (printInClient("Usage: </KICK> <CHANNEL> <NICK> <REASON>", fd));
 	std::string	target = message[3].substr(1, message[3].length() - 1);
 	std::string channel = message[2].substr(1, message[2].length() - 1);
+	std::string names;
+	std::string reply;
 
 	for (channelIterator it = _channList.begin(); it != _channList.end(); it++)
 	{
@@ -363,9 +365,28 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 				{
 					if (it->isMember(target) && !it->hasOperatorPrivileges(target))
 					{
+						printInClient("You have been kicked out of #" + channel + " by the operator", it->findClient(target)->getFd());
 						it->removeMember(target);
+						for (size_t i = 0; i < it->getMembers().size(); i++)
+						{
+							for (size_t j = 0; j < it->getOperators().size(); j++)
+							{
+								if (it->getOperators()[j].getNickname() == it->getMembers()[i].getNickname())
+									names += "@";
+							}
+							names += it->getMembers()[i].getNickname();
+							names += " ";
+						}
+						for (size_t i = 0; i < it->getMembers().size(); i++)
+						{
+							reply = std::string(":") + SERVER_IP + " 353 " + it->getMembers()[i].getNickname() + " = #" + channel + " :" + names + "\r\n";
+							send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+							reply = std::string(":") + SERVER_IP + " 366 " + it->getMembers()[i].getNickname() + " #" + channel + " :End of /NAMES list\r\n";
+							send(it->getMembers()[i].getFd(), reply.c_str(), reply.length(), 0);
+						}
+						displayTime();
 						std::cout << target << " was kicked out of " << it->getName() << std::endl;
-						printInClient("You kicked " + target + " out of " + it->getName(), fd);
+						printInClient("You kicked " + target + " out of #" + it->getName(), fd);
 					}
 				}
 			}
@@ -407,7 +428,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 		getCommand(msg, clients, clientIt->second.getFd(), _password);
 		it->setInviteOnly(true);
 		printInClient("You invited " + target + " to " + channel, fd);
-		printInClient(clients[fd].getNickname() + " invited you to" + channel, clientIt->first);
+		printInClient(clients[fd].getNickname() + " invited you to " + channel, clientIt->first);
 	}
 	else
 		printInClient("You can't invite " + target + " to #" + it->getName(), fd);
@@ -464,6 +485,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 				send(fd, reply.c_str(), reply.length(), 0);
 				if(it->getMembers().size() == 0)
 				{
+					displayTime();
 					std::cout << "Channel #"<< it->getName() << " is now empty and has been removed from the server!" << std::endl;
 					_channList.erase(it);
 					printInClient("Channel was deleted because of you...", fd);
@@ -549,7 +571,6 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 					send(fd, reply.c_str(), reply.length(), 0);
 					//topic reply
 					reply = std::string(":") + SERVER_IP + " 332 " + clients[fd].getNickname() + " #" + channel_name + " " + chan.getTopic() + "\r\n";
-					std::cout << "topic :" << chan.getTopic() << std::endl;
 					send(fd, reply.c_str(), reply.length(), 0);
 					//names reply
     				reply = std::string(":") + SERVER_IP + " 353 " + clients[fd].getNickname() + " = #" + channel_name + " :@" + clients[fd].getNickname() + "\r\n";

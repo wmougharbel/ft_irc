@@ -160,7 +160,12 @@ void Channel::topic(const std::vector<std::string> &message, Client &client){
         }
         return;
     }
-    _topic = message[2];
+    _topic = "";
+    for(size_t i = 2; i < message.size(); i++)
+    {
+        _topic += message[i];
+        _topic += " ";
+    }
     std::string modeMessage = std::string(":") + SERVER_IP + " 332 " + client.getNickname() + " " + _name + " :" + _topic  + "\r\n";
     if (send(client.getFd(), modeMessage.c_str(), modeMessage.length(), 0) < 0) 
         {
