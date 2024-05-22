@@ -407,7 +407,7 @@ void Server::invite(std::vector<std::string> &message, std::map<int, Client> &cl
 		getCommand(msg, clients, clientIt->second.getFd(), _password);
 		it->setInviteOnly(true);
 		printInClient("You invited " + target + " to " + channel, fd);
-		printInClient(clients[fd].getNickname() + " invited you to " + channel, clientIt->first);
+		printInClient(clients[fd].getNickname() + " invited you to" + channel, clientIt->first);
 	}
 	else
 		printInClient("You can't invite " + target + " to #" + it->getName(), fd);
@@ -607,14 +607,19 @@ void Server::getCommand(std::vector<std::string> &message, std::map<int, Client>
 			break ;
 
 		case 8:
-			channel_name = message[1].substr(1);
-			channel = findChannel(channel_name);
-			if (!channel) {
-				std::string reply = ":127.0.0.1 403 " + clients[fd].getNickname() + " #" + channel_name + " :No such channel\r\n";
-				send(fd, reply.c_str(), reply.length(), 0);
-			} else {
-				channel->mode(message, clients[fd]);
+			if(message.size() >= 2)
+			{
+				channel_name = message[1].substr(1);
+				channel = findChannel(channel_name);
+				if (!channel) {
+					std::string reply = ":127.0.0.1 403 " + clients[fd].getNickname() + " #" + channel_name + " :No such channel\r\n";
+					send(fd, reply.c_str(), reply.length(), 0);
+				} else {
+					channel->mode(message, clients[fd]);
+				}
 			}
+			else
+				std::string reply = ":127.0.0.1 403 :Not enough arguments!\r\n";
 			break ;
 
 		default:
