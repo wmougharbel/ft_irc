@@ -164,7 +164,7 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		{
 			std::string message = buf.substr(0, pos);
 			parser(message, clients, i, pfds);
-			std::cout << message << std::endl;
+			// std::cout << message << std::endl;
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
@@ -390,7 +390,13 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 						std::cout << target << " was kicked out of " << it->getName() << std::endl;
 						printInClient("You kicked " + target + " out of #" + it->getName(), fd);
 					}
+					else if (it->hasOperatorPrivileges(target))
+						printInClient(target + " is an operator, you can't kick them out.", fd);
+					else
+						printInClient(target + " was not found in channel", fd);
 				}
+				else
+					printInClient("You don't have operator rights", fd);
 			}
 		}
 	}
@@ -508,7 +514,8 @@ void Server::getCommand(std::vector<std::string> &incoming, std::map<int, Client
 	std::string filteredMsg = "";
 	std::vector<std::string> message;
 
-for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.end(); ++mit) {
+for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.end(); ++mit)
+{
         std::string tempMsg;
         for (size_t i = 0; i < mit->length(); ++i) {
             if (isprint((*mit)[i])) {
@@ -534,9 +541,6 @@ for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.
 	// 	message.push_back(filteredMsg);
 	// }
 
-
-    // Final output
-    std::cout << "Final filtered message: " << filteredMsg << std::endl;
 	std::string receivedCommand = capitalize(message[0]);
 	Channel* channel;
 	size_t i;
