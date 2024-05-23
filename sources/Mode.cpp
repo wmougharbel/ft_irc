@@ -170,6 +170,16 @@ void Channel::topic(const std::vector<std::string> &message, Client &client){
         }
         return;
     }
+    if (!isMember(client.getNickname()))
+    {
+        std::string errorMessage = client.getNickname() + " #" + _name + " :You're not in channel \r\n";
+        if (send(client.getFd(), errorMessage.c_str(), errorMessage.length(), 0) < 0)
+        {
+            std::cerr << "Error, could not send error message" << std::endl;
+            return;
+        }
+        return;
+    }
     _topic = "";
     for(size_t i = 2; i < message.size(); i++)
     {

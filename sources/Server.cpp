@@ -39,6 +39,7 @@ Server::~Server()
 			i->fd = -1;
 		}
 	}
+	_pfd.clear();
 }
 
 void Server::_initializeSocket(void)
@@ -237,16 +238,6 @@ void SignalHandler(int signum)
 		std::cout << "\nInterrupt signal received. Shutting down server..\n";
 		isRunning = false;
 	}
-	else if (signum == SIGQUIT)
-	{
-		std::cout << "Ctrl + D signal received. Shutting down server..\n";
-	}
-	    if (signum == SIGTSTP) {
-        std::cout << "Received SIGTSTP, suspending...\n";
-        raise(SIGSTOP); // Actually suspend the process
-    } else if (signum == SIGCONT) {
-        std::cout << "Received SIGCONT, resuming...\n";
-	}
 	exit(signum);
 }
 
@@ -361,11 +352,13 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 	{
 		if (channel == it->getName())
 		{
-			for (std::vector<Client>::iterator clientIt = it->getOperators().begin(); clientIt != it->getOperators().end(); clientIt++)
+			for (size_t i = 0; i < it->getOperators().size(); i++)
 			{
-				if (clientIt->getNickname() == clients[fd].getNickname())
+				if (clients[fd].getNickname() == it->getOperators()[i].getNickname())
 				{
-					if (it->isMember(target) && !it->hasOperatorPrivileges(target))
+					if (target == clients[fd].getNickname())
+						return (printInClient("Are you okay bro? Can't kick yourself out.",fd));
+					if (it->isMember(target))
 					{
 						printInClient("You have been kicked out of #" + channel + " by the operator", it->findClient(target)->getFd());
 						it->removeMember(target);
@@ -389,9 +382,10 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 						displayTime();
 						std::cout << target << " was kicked out of " << it->getName() << std::endl;
 						printInClient("You kicked " + target + " out of #" + it->getName(), fd);
+						return;
 					}
-					else if (it->hasOperatorPrivileges(target))
-						printInClient(target + " is an operator, you can't kick them out.", fd);
+					// else if (it->hasOperatorPrivileges(target))
+					// 	printInClient(target + " is an operator, you can't kick them out.", fd);
 					else
 						printInClient(target + " was not found in channel", fd);
 				}
@@ -443,7 +437,7 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 
 	if (message.size() < 3)
 	{
-		printInClient("Error, usage: /PART #<channel>", fd);
+		printInClient("Error, usage: /PART #<channel> <reason>", fd);
 		return ;
 	}
 	for (size_t i = 2; i < message.size(); i++)
@@ -679,7 +673,7 @@ for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.
 			}
 			else
 			{
-				std::string reply = ":127.0.0.1 403 :Not enough arguments!\r\n";
+				std::string reply = "Not enough arguments!\r\n";
 				send(fd, reply.c_str(), reply.length(), 0);
 			}
 			break ;
@@ -727,9 +721,6 @@ int main(int argc, char *argv[])
 	}
 
 	signal(SIGINT, SignalHandler);
-	signal(SIGQUIT, SignalHandler);
-	signal(SIGSTOP, SignalHandler);
-	signal(SIGCONT, SignalHandler);
 	Server serv(argv[1], argv[2]);
 	isRunning = true;
 
