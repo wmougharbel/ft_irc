@@ -491,13 +491,17 @@ void Server::leave(std::vector<std::string> &message, std::map<int, Client> &cli
 
 void Server::extractPassword(std::vector<std::string> &incoming, std::map<int, Client> &clients, int fd, std::string &serverPass)
 {
+	if (incoming.size() != 2)
+		return (printInClient("Usage: </PASS> <PASSWORD>", fd));
 	if (serverPass == incoming[1])
 	{
 		clients[fd].setAuthStatus(true);
+		printInClient("Authentication Successful", fd);
 	}
 	else
 	{
-		send(fd, "Password Incorrect\n", 20, 0);
+		printInClient("Incorrect Password", fd);
+		return ;
 	}
 }
 
