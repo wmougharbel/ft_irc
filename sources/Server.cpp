@@ -165,7 +165,6 @@ void Server::existingClient(std::vector<pollfd> &pfds, int i, std::map<int, Clie
 		{
 			std::string message = buf.substr(0, pos);
 			parser(message, clients, i, pfds);
-			// std::cout << message << std::endl;
 			buf.erase(0, pos + 2); // +2 to remove the "\r\n"
 			pos = buf.find("\r\n");
 		}
@@ -384,8 +383,6 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 						printInClient("You kicked " + target + " out of #" + it->getName(), fd);
 						return;
 					}
-					// else if (it->hasOperatorPrivileges(target))
-					// 	printInClient(target + " is an operator, you can't kick them out.", fd);
 					else
 						printInClient(target + " was not found in channel", fd);
 				}
@@ -398,6 +395,8 @@ void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clie
 
 void Server::invite(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
+	if (message.size() != 3)
+		return (printInClient("Usage: </INVITE> <USER> #<CHANNEL>", fd));
 	std::string	target = message[1];
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	channelIterator	it = _channList.begin();
@@ -512,33 +511,21 @@ void Server::getCommand(std::vector<std::string> &incoming, std::map<int, Client
 	std::string filteredMsg = "";
 	std::vector<std::string> message;
 
-for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.end(); ++mit)
-{
-        std::string tempMsg;
-        for (size_t i = 0; i < mit->length(); ++i) {
-            if (isprint((*mit)[i])) {
-                tempMsg += (*mit)[i];
-            }
-        }
-        filteredMsg += tempMsg;
-        if (mit != incoming.end() - 1) {
-            filteredMsg += " ";
-        }
-        message.push_back(tempMsg);
-    }
-	// for(std::vector<std::string>::iterator mit = oldmsg.begin(); mit != oldmsg.end(); mit++)
-	// {
-	// 	for (size_t i = 0; i < mit->length(); i++)
-	// 	{
-	// 		if (isprint((*mit)[i]))
-	// 			filteredMsg += (*mit)[i];
-	// 	}
-	// 	if (mit != oldmsg.end())
-	// 		filteredMsg +=" ";
-	// std::cout << "filtered: " << filteredMsg << std::endl;	
-	// 	message.push_back(filteredMsg);
-	// }
-
+	for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.end(); ++mit)
+	{
+		std::string tempMsg;
+		for (size_t i = 0; i < mit->length(); ++i) 
+		{
+			if (isprint((*mit)[i]))
+				tempMsg += (*mit)[i];
+		}
+		filteredMsg += tempMsg;
+		if (mit != incoming.end() - 1)
+		{
+			filteredMsg += " ";
+		}
+		message.push_back(tempMsg);
+	}
 	std::string receivedCommand = capitalize(message[0]);
 	Channel* channel;
 	size_t i;
@@ -646,7 +633,6 @@ for (std::vector<std::string>::iterator mit = incoming.begin(); mit != incoming.
 		case 4:
 			if (clients[fd].getAuthStatus())
 			{
-				//before calling privMsg, need to check if "nickname" / "channel name" is valid and exists.
 				privMsg(message, clients, fd);
 			}
 			break ;

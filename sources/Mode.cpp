@@ -49,7 +49,10 @@ void Channel::mode(const std::vector<std::string> &message, Client &client) {
                     } else continue;     
                 } 
                 else
-                    _ChannelKey.clear(); 
+                {
+                    _ChannelKey.clear();
+                    _ispassword = false;
+                } 
                 break;
             case 'o':
                 if(argIndex < message.size())
@@ -147,7 +150,6 @@ void Channel::printMode(Client &client, bool broadcast)
 
     }
 }
-
 
 void Channel::topic(const std::vector<std::string> &message, Client &client){
 	if(message.size() == 2)
