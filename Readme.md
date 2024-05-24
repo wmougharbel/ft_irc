@@ -54,10 +54,10 @@ Invites a user to a channel.
 ### PRIVMSG
 Sends a private message to a user or a channel.
 
-#### User
+#### User Message:
 - ```PRIVMSG <nickname> <message>```
 
-#### Channel
+#### Channel Message:
 - ```PRIVMSG #<channel> <message>```
 
 ### MODE
