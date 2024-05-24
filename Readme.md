@@ -7,10 +7,10 @@ Welcome to `ft_irc`, our implementation of an IRC server. This project provides 
 ### Running the Program
 
 1. **Compile the Program:**
-   ```make```
+   - ```make```
 
 2. **Run the IRC Server:**
-    ```./ircserv <port> <password>```
+    - ```./ircserv <port> <password>```
     - `./ircserv`: Program name.
     - `<port>`: Specify the port number for the server.
     - `<password>`: Specify the password for the server.
@@ -24,5 +24,7 @@ Welcome to `ft_irc`, our implementation of an IRC server. This project provides 
 
 ### PASS
 Authenticates the client. This must be the first command sent by the client.
-    ```PASS <password>```
+- ```PASS <password>```
+
+
 
