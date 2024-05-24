@@ -16,7 +16,7 @@ Welcome to `ft_irc`, our implementation of an IRC server. This project provides 
     - `<password>`: Specify the password for the server.
 
 3. **Connect to the Server:**
-    - User `nc` (netcat) or an IRC client like HexChat to connect to the server.
+    - Use `nc` (netcat) or an IRC client like HexChat to connect to the server.
 
 4. **Enjoy our ft_irc!**
 

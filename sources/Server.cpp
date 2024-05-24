@@ -341,7 +341,7 @@ void	Server::privMsg(std::vector<std::string> &message, std::map<int, Client> &c
 void Server::kick(std::vector<std::string> &message, std::map<int, Client> &clients, int fd)
 {
 	if (message.size() != 4)
-		return (printInClient("Usage: </KICK> <CHANNEL> <NICK> <REASON>", fd));
+		return (printInClient("Usage: </KICK> <NETWORK> <CHANNEL> <NICK>", fd));
 	std::string	target = message[3].substr(1, message[3].length() - 1);;
 	std::string channel = message[2].substr(1, message[2].length() - 1);
 	std::string names;
